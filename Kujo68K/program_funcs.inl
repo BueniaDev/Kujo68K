@@ -61,6 +61,45 @@ void setSR()
     return;
 }
 
+int countRegZero(uint16_t value)
+{
+    for (int i = 0; i != 16; i++)
+    {
+	if (testbit(value, i))
+	{
+	    return i;
+	}
+    }
+
+    return 16;
+}
+
+void stepMovem()
+{
+    int num_regs = countRegZero(reg_movemr);
+
+    if (num_regs > 15)
+    {
+	num_regs = 0;
+    }
+
+    reg_movems = mapSP(num_regs);
+    reg_movemr &= ~(1 << num_regs);
+}
+
+void stepMovemPredec()
+{
+    int num_regs = countRegZero(reg_movemr);
+
+    if (num_regs > 15)
+    {
+	num_regs = 0;
+    }
+
+    reg_movems = mapSP(num_regs ^ 0xF);
+    reg_movemr &= ~(1 << num_regs);
+}
+
 void setFC(bool fc0, bool fc1, bool is_r, bool is_n)
 {
     current_pins.pin_fc0 = fc0;

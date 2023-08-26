@@ -488,7 +488,7 @@ IrDecoded decodeIR(uint16_t ir)
 	break;
 	case 0x4:
 	{
-	    decoded.rx_is_areg = (getBits(ir, 6, 3) != 0b111);
+	    decoded.rx_is_areg = (getBits(ir, 6, 3) == 0b111);
 	}
 	break;
 	case 0x8:
@@ -1510,8 +1510,8 @@ array<array<uint8_t, 128>, 2> alu_masks = {
 vector<string> regname = 
 {
     "-1",
-    "reg_da[rx_index]", "reg_da[rx_index]", "reg_da[ry_index]", "reg_da[ry_index]", "reg_da[mapSP(reg_irc >> 12)]", "reg_da[reg_sp]", "reg_da[16]", "reg_da[15]", "reg_dt", "reg_au", "reg_at", "reg_pc", "reg_aob", "reg_da[movems_index]",
-    "reg_da[rx_index]", "reg_da[rx_index]", "reg_da[ry_index]", "reg_da[ry_index]", "reg_da[mapSP(reg_irc >> 12)]", "reg_da[reg_sp]", "reg_da[16]", "reg_da[15]", "reg_dt", "reg_au", "reg_at", "reg_pc", "reg_aob", "reg_da[movems_index]",
+    "reg_da[rx_index]", "reg_da[rx_index]", "reg_da[ry_index]", "reg_da[ry_index]", "reg_da[mapSP(reg_irc >> 12)]", "reg_da[reg_sp]", "reg_da[16]", "reg_da[15]", "reg_dt", "reg_au", "reg_at", "reg_pc", "reg_aob", "reg_da[reg_movems]",
+    "reg_da[rx_index]", "reg_da[rx_index]", "reg_da[ry_index]", "reg_da[ry_index]", "reg_da[mapSP(reg_irc >> 12)]", "reg_da[reg_sp]", "reg_da[16]", "reg_da[15]", "reg_dt", "reg_au", "reg_at", "reg_pc", "reg_aob", "reg_da[reg_movems]",
     "reg_alue", "reg_alub", "reg_dbin", "reg_dbout", "reg_aluo", "reg_dcr", "reg_dcro", "reg_dcro8", "reg_ftu", "reg_ir", "reg_irc", "reg_ird", "reg_edb", "reg_sr", "reg_movemr"
 };
 
@@ -1588,7 +1588,18 @@ int exprDeps(deque<string> ci, int &num_args)
 	num_args = 1;
 	return exprDeps(ci.at(0));
     }
-    else if ((ci.at(0) == "+c") || (ci.at(0) == "+1/2") || (ci.at(0) == "-1/2"))
+    else if ((ci.at(0) == "+1/2") || (ci.at(0) == "-1/2"))
+    {
+	auto args = ci;
+	args.pop_front();
+
+	int nargs = 0;
+	int deps = exprDeps(args, nargs);
+
+	num_args = nargs;
+	return deps;
+    }
+    else if (ci.at(0) == "+c")
     {
 	auto args = ci;
 	args.pop_back();
@@ -2235,11 +2246,6 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	code.push_back({"set", {getInt(movemr), getInt(dbin)}});
     }
 
-    if (drop_critical)
-    {
-	code.push_back({"dropCritical"});
-    }
-
     if (nano_dec.perm_start)
     {
 	bool fc0 = (((!ir_dec.is_pc_rel) && !micro16) || micro15);
@@ -2416,6 +2422,11 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	code.push_back({"updateSSW"});
     }
 
+    if (drop_critical)
+    {
+	code.push_back({"dropCritical"});
+    }
+
     if (nano_dec.tvn_2_ftu)
     {
 	if ((tvn != -1) && (tvn != 1))
@@ -2432,8 +2443,6 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    throw runtime_error("Codegen error");
 	}
     }
-
-    // TODO: Implement Kujocode for ALU (T3)
 
     bool dbl_2_pcl = (nano_dec.dbl_2_reg && nano_dec.pcl_dbl);
     bool dbh_2_pch = (nano_dec.dbh_2_reg && nano_dec.pch_dbh);
@@ -2781,8 +2790,14 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	{
 	    if (nano_dec.abh_2_ryh)
 	    {
-		cout << "abh_2_ryl, (ry != dyl), case 0" << endl;
-		throw runtime_error("Codegen error");
+		deque<string> args = {getInt(ry)};
+
+		for (auto &arg : maybeMerge(abh, abl, is_ext_abh))
+		{
+		    args.push_back(arg);
+		}
+
+		code_to_sort.push_back({"set", args});
 	    }
 	    else if (nano_dec.dbh_2_ryh)
 	    {
@@ -2880,10 +2895,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
 
 
-
-    // T4 (WIP)
-
-    // TODO: Implement Kujocode for ALU (T4)
+    // T4
 
     if (nano_dec.au_clk_en)
     {
@@ -2986,7 +2998,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 			args.push_back(arg);
 		    }
 
-		    args.push_back("rx");
+		    args.push_back("rx_index");
 		}
 		else
 		{
@@ -2997,7 +3009,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 			args.push_back(arg);
 		    }
 
-		    args.push_back("ry");
+		    args.push_back("ry_index");
 		}
 
 		code_to_sort.push_back({"set", args});
@@ -3029,6 +3041,57 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 		for (auto &arg : maybeMerge(abh, abl, is_ext_abh))
 		{
 		    args.push_back(arg);
+		}
+
+		code_to_sort.push_back({"set", args});
+	    }
+	    break;
+	    case 7:
+	    {
+		deque<string> args = {getInt(aul)};
+		if (nano_dec.no_sp_align)
+		{
+		    args.push_back("+c");
+
+		    for (auto &arg : maybeMerge(dbh, dbl, is_ext_dbh))
+		    {
+			args.push_back(arg);
+		    }	
+
+		    args.push_back(getInt(-1));
+		}
+		else if (!ir_dec.is_byte)
+		{
+		    args.push_back("+c");
+
+		    for (auto &arg : maybeMerge(dbh, dbl, is_ext_dbh))
+		    {
+			args.push_back(arg);
+		    }	
+
+		    args.push_back(getInt(-2));
+		}
+		else if (nano_dec.rxl_2_db)
+		{
+		    args.push_back("-1/2");
+
+		    for (auto &arg : maybeMerge(dbh, dbl, is_ext_dbh))
+		    {
+			args.push_back(arg);
+		    }
+
+		    args.push_back("rx_index");
+		}
+		else
+		{
+		    args.push_back("-1/2");
+
+		    for (auto &arg : maybeMerge(dbh, dbl, is_ext_dbh))
+		    {
+			args.push_back(arg);
+		    }
+
+		    args.push_back("ry_index");
 		}
 
 		code_to_sort.push_back({"set", args});
@@ -3143,6 +3206,18 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     if (nano_dec.const_2_ftu)
     {
 	code.push_back({"state", {"setFTUConst"}});
+    }
+
+    if (nano_dec.upd_pren)
+    {
+	if (ir_dec.movem_pre_decr)
+	{
+	    code.push_back({"state", {"stepMovemPredec"}});
+	}
+	else
+	{
+	    code.push_back({"state", {"stepMovem"}});
+	}
     }
 
     if (!(nano_dec.perm_start || nano_dec.wait_bus_finish))
@@ -3531,6 +3606,34 @@ string makeExpression(deque<string> args, int &num_args)
 	    num_args = (2 + alu_args);
 	    return ss.str();
 	}
+    }
+    else if (args.at(0) == "+1/2")
+    {
+	int args0 = 0;
+	auto ci = args;
+	ci.pop_front();
+
+	string arg0 = makeExpression(ci, args0);
+
+	stringstream ss;
+	ss << arg0 << " - ((" << args.back() << " < 15) ? 1 : 2)";
+
+	num_args = (args0 + 1);
+	return ss.str();
+    }
+    else if (args.at(0) == "-1/2")
+    {
+	int args0 = 0;
+	auto ci = args;
+	ci.pop_front();
+
+	string arg0 = makeExpression(ci, args0);
+
+	stringstream ss;
+	ss << arg0 << " - ((" << args.back() << " < 15) ? 1 : 2)";
+
+	num_args = (args0 + 1);
+	return ss.str();
     }
     else if (args.at(0) == "+r")
     {
@@ -3989,7 +4092,7 @@ vector<string> generateCode(kujocode code)
 
 		bool not_fc = (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)));
 
-		if (!isFalse(ci.args.at(2)) && (!not_fc || !false))
+		if (isFalse(ci.args.at(2)) && (!not_fc || !false))
 		{
 		    source.push_back("\t    checkExcept();");
 		}
@@ -4476,6 +4579,8 @@ void generateStateFunction(ostream &file, string func_name, string state_name)
 
 void generateInstFunction(ofstream &file, M68KHandler handler)
 {
+    // cout << "Generating instruction of " << hex << int(handler.opcode) << ", mask of " << hex << int(handler.opcode_mask) << endl;
+
     stringstream ss;
     generateFunctionStart(ss, handler.handler_name);
 
@@ -4604,7 +4709,7 @@ bool runHandlers()
     // cout << ss.str();
     
     // stringstream ss;
-    // generateCodeFromInstruction(ss, 0x4E73, 0xFFFF);
+    // generateCodeFromInstruction(ss, 0x4A20, 0xFFF8);
     // cout << ss.str();
 
     // generateCodeFromInstruction(0x46FC, 0xFFFF);

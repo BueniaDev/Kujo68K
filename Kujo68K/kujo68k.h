@@ -246,6 +246,7 @@ namespace kujo68k
 	    uint32_t reg_sp = 0;
 	    uint8_t reg_dcr = 0;
 	    uint16_t reg_new_sr = 0;
+	    uint32_t reg_movems = 0;
 
 	    int sp_index = 0;
 

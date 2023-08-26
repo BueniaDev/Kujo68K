@@ -112,17 +112,14 @@ if (is_cpu_access)
 	    if (is_autovec)
 	    {
 		int level = (current_pins.addr & 0x7);
-		cout << "Autovectored interrupt of " << dec << int(level) << endl;
 		reg_edb = (0x18 + level);
 	    }
 	    else if (is_spurious)
 	    {
-		cout << "Spurious interrupt" << endl;
 		reg_edb = 0x18;
 	    }
 	    else
 	    {
-		cout << "Custom interrupt" << endl;
 		reg_edb = current_pins.data;
 	    }
 
