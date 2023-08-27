@@ -1051,13 +1051,21 @@ vector<frametype> genGraph(uint16_t a1, uint16_t a2, uint16_t a3, uint16_t ir)
 	    }
 	    else if (cond_id == cbc::ms0)
 	    {
-		cout << "Conditional of case 1 found" << endl;
-		throw runtime_error("Codegen error");
+		uint16_t val0 = testbit(ir, 8) ? cbc_slots[cond_id].at(2) : cbc_slots[cond_id].at(1);
+		uint16_t frame_val = (next_base | (cbc_slots[cond_id].at(0) << 6));
+		uint16_t frame_val1 = (next_base | (val0 << 6));
+
+		frame.push_back(frame_val);
+		frame.push_back(frame_val1);
 	    }
 	    else if ((cond_id == cbc::m01) && !testbit(ir, 8))
 	    {
-		cout << "Conditional of case 2 found" << endl;
-		throw runtime_error("Codegen error");
+		uint16_t frame_val = (next_base | (cbc_slots[cond_id].at(0) << 6));
+		uint16_t frame_val1 = (next_base | (cbc_slots[cond_id].at(1) << 6));
+		uint16_t frame_val2 = (next_base | (cbc_slots[cond_id].at(3) << 6));
+		frame.push_back(frame_val);
+		frame.push_back(frame_val1);
+		frame.push_back(frame_val2);
 	    }
 	    else
 	    {
@@ -2269,8 +2277,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 
     if (cond == cbc::i11)
     {
-	cout << "Condition of i11" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"testbit(reg_irc, 11)"}});
     }
     else if ((cond == cbc::d4) || (cond == cbc::d4i))
     {
@@ -2289,8 +2296,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if ((cond == cbc::auz) || (cond == cbc::auzi))
     {
-	cout << "Condition of auz/auzi" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(((reg_au & 0x3F) == 0) ? 1 : 0)"}});
     }
     else if (cond == cbc::v)
     {
@@ -2362,13 +2368,11 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if (cond == cbc::ms0)
     {
-	cout << "Condition of ms0" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"testbit(reg_alue, 0) ? 1 : 0"}});
     }
     else if ((cond == cbc::m01) && !testbit(ir, 8))
     {
-	cout << "Condition of m01 A" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2"}});
     }
     else if ((cond == cbc::m01) && testbit(ir, 8))
     {
@@ -2581,13 +2585,18 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    }
 	    else if (nano_dec.abh_2_rxh)
 	    {
-		cout << "dbl_2_rxl, (rx == dxl), case 1" << endl;
-		throw runtime_error("Codegen error");
+		deque<string> args = {getInt(rx)};
+
+		for (auto &arg : maybeMerge(abh, dbd, is_ext_abh))
+		{
+		    args.push_back(arg);
+		}
+
+		code_to_sort.push_back({"set", args});
 	    }
 	    else
 	    {
-		cout << "dbl_2_rxl, (rx == dxl), case 2" << endl;
-		throw runtime_error("Codegen error");
+		code_to_sort.push_back({"set16Low", {getInt(rx), getInt(dbd)}});
 	    }
 	}
 	else
@@ -2605,13 +2614,18 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    }
 	    else if (nano_dec.abh_2_rxh)
 	    {
-		cout << "dbl_2_rxl, (rx != dxl), case 1" << endl;
-		throw runtime_error("Codegen error");
+		deque<string> args = {getInt(rx)};
+
+		for (auto &arg : maybeMerge(abh, dbl, is_ext_abh))
+		{
+		    args.push_back(arg);
+		}
+
+		code_to_sort.push_back({"set", args});
 	    }
 	    else
 	    {
-		cout << "dbl_2_rxl, (rx != dxl), case 2" << endl;
-		throw runtime_error("Codegen error");
+		code_to_sort.push_back({"set16Low", {getInt(rx), getInt(dbl)}});
 	    }
 	}
     }
@@ -2682,8 +2696,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if (nano_dec.dbh_2_rxh)
     {
-	cout << "dbh_2_rxh" << endl;
-	throw runtime_error("Codegen error");
+	code_to_sort.push_back({"set16High", {getInt(rx), getInt(dbh)}});
     }
     else if (nano_dec.abh_2_rxh)
     {
@@ -2801,8 +2814,14 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    }
 	    else if (nano_dec.dbh_2_ryh)
 	    {
-		cout << "abl_2_ryl, (ry != dyl), case 1" << endl;
-		throw runtime_error("Codegen error");
+		deque<string> args = {getInt(ry)};
+
+		for (auto &arg : maybeMerge(dbh, abl, is_ext_dbh))
+		{
+		    args.push_back(arg);
+		}
+
+		code_to_sort.push_back({"set", args});
 	    }
 	    else
 	    {
@@ -2812,8 +2831,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if (nano_dec.dbh_2_ryh)
     {
-	cout << "dbh_2_ryh" << endl;
-	throw runtime_error("Codegen error");
+	code_to_sort.push_back({"set16High", {getInt(ry), getInt(dbh)}});
     }
     else if (nano_dec.abh_2_ryh)
     {
@@ -4127,6 +4145,17 @@ vector<string> generateCode(kujocode code)
 		source.push_back("\t    updateSupervisor();");
 		source.push_back("\t    updateInterrupts();");
 	    }
+	    else if (ci.tag == "setCCR")
+	    {
+		string reg = regname.at(toInt(ci.args.at(0)));
+		auto args = ci.args;
+		args.pop_front();
+		string expr = makeExpression(args);
+
+		stringstream ss;
+		ss << "\t    " << reg << " = reg_isr = ((" << expr << " & 0x1F) | (" << reg << " & 0xA700));";
+		source.push_back(ss.str());
+	    }
 	    else if (ci.tag == "setSRD")
 	    {
 		auto args = ci.args;
@@ -4579,7 +4608,7 @@ void generateStateFunction(ostream &file, string func_name, string state_name)
 
 void generateInstFunction(ofstream &file, M68KHandler handler)
 {
-    // cout << "Generating instruction of " << hex << int(handler.opcode) << ", mask of " << hex << int(handler.opcode_mask) << endl;
+    cout << "Generating instruction of " << hex << int(handler.opcode) << ", mask of " << hex << int(handler.opcode_mask) << endl;
 
     stringstream ss;
     generateFunctionStart(ss, handler.handler_name);

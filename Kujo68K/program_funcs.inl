@@ -569,6 +569,45 @@ void jumpCond2(int state1, int state0)
     callFunc();
 }
 
+void jumpCond3(int state2, int state1, int state0)
+{
+    if (reg_t == 0)
+    {
+	inst_state = state0;
+    }
+    else if (reg_t == 1)
+    {
+	inst_state = state1;
+    }
+    else
+    {
+	inst_state = state2;
+    }
+
+    inst_cycle = 0;
+    callFunc();
+}
+
+void jumpCond4(int state3, int state2, int state1, int state0)
+{
+    if (reg_t == 0)
+    {
+	inst_state = state0;
+    }
+    else if (reg_t == 1)
+    {
+	inst_state = state1;
+    }
+    else if (reg_t == 2)
+    {
+	inst_state = state2;
+    }
+    else
+    {
+	inst_state = state3;
+    }
+}
+
 void jump(int state_num)
 {
     inst_state = state_num;
