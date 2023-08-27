@@ -156,6 +156,13 @@ void setReg8ExLow(uint16_t &reg, uint16_t value)
     reg = val16;
 }
 
+void setReg8ExHigh(uint16_t &reg, uint16_t value)
+{
+    uint8_t val8 = (value >> 8);
+    uint16_t val16 = (val8 | (val8 << 8));
+    reg = val16;
+}
+
 void readWordCPU()
 {
     bus_state = S0;

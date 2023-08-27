@@ -2370,14 +2370,13 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     {
 	code.push_back({"setCond", {"testbit(reg_alue, 0) ? 1 : 0"}});
     }
-    else if ((cond == cbc::m01) && !testbit(ir, 8))
+    else if ((cond == cbc::m01) && !testbit(ir_val, 8))
     {
 	code.push_back({"setCond", {"((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2"}});
     }
-    else if ((cond == cbc::m01) && testbit(ir, 8))
+    else if ((cond == cbc::m01) && testbit(ir_val, 8))
     {
-	cout << "Condition of m01 B" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3"}});
     }
     else if (cond != -1)
     {
@@ -2405,6 +2404,11 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    case 1:
 	    {
 		code.push_back({arg, {getInt(dbout), getInt(abd)}});
+	    }
+	    break;
+	    case 2:
+	    {
+		code.push_back({arg, {getInt(dbout), getInt(dbd)}});
 	    }
 	    break;
 	    case 3:
@@ -4738,7 +4742,7 @@ bool runHandlers()
     // cout << ss.str();
     
     // stringstream ss;
-    // generateCodeFromInstruction(ss, 0x4A20, 0xFFF8);
+    // generateCodeFromInstruction(ss, 0xC1C0, 0xF1F8);
     // cout << ss.str();
 
     // generateCodeFromInstruction(0x46FC, 0xFFFF);

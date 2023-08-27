@@ -7934,7 +7934,138 @@ void m68kBclrDdDsProgram()
 
 void m68kMovepWordDdDasProgram()
 {
-    unknownInstr();
+    rx_index = ((reg_irdi >> 9) & 0x7);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1ca mpow1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 36d mpow2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    setReg8ExHigh(reg_dbout, reg_da[rx_index]);
+	    reg_au = reg_au + 2;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    // 36e mpow3
+	    reg_aob = reg_au;
+	    setReg8ExLow(reg_dbout, reg_da[rx_index]);
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kBclrDdAisProgram()
@@ -8968,7 +9099,190 @@ void m68kBsetDdDsProgram()
 
 void m68kMovepLongDdDasProgram()
 {
-    unknownInstr();
+    rx_index = ((reg_irdi >> 9) & 0x7);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1ce mpol1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 36b mpol2
+	    reg_aob = reg_au;
+	    setReg8ExHigh(reg_dbout, high16(reg_da[rx_index]));
+	    reg_au = reg_au + 2;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    // 36c mpol3
+	    reg_aob = reg_au;
+	    setReg8ExLow(reg_dbout, high16(reg_da[rx_index]));
+	    reg_au = reg_au + 2;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    // 36d mpow2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    setReg8ExHigh(reg_dbout, reg_da[rx_index]);
+	    reg_au = reg_au + 2;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    // 36e mpow3
+	    reg_aob = reg_au;
+	    setReg8ExLow(reg_dbout, reg_da[rx_index]);
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, false, false);
+	    writeByte();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kBsetDdAisProgram()
@@ -55380,47 +55694,1887 @@ void m68kMoveLongAsAidProgram()
 
 void m68kMoveLongAisAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // b adrl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAipsAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // f pinl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 21a pinl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_au + 2;
+	    // 21b pinl3
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongPaisAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 179 pdcl1
+	    reg_au = reg_da[ry_index] - 4;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 17a pdcl2
+	    reg_aob = reg_au;
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDasAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDaisAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_da[ry_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr16AidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // e abww1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    reg_at = ext32(reg_dbin);
+	    reg_au = ext32(reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr32AidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e6 ablw1
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // d ablw2
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    setReg16Low(reg_at, reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpcAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_pc;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpciAidProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_pc + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3a9 mmrl1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    // 3aa mmrl2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 25 mmrw2
+	    reg_aob = reg_pc;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_au = reg_pc + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongImm32AidProgram()
@@ -55822,47 +57976,1869 @@ void m68kMoveLongAsAipdProgram()
 
 void m68kMoveLongAisAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // b adrl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAipsAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // f pinl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 21a pinl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_au + 2;
+	    // 21b pinl3
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongPaisAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 179 pdcl1
+	    reg_au = reg_da[ry_index] - 4;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 17a pdcl2
+	    reg_aob = reg_au;
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDasAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDaisAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_da[ry_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr16AipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // e abww1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    reg_at = ext32(reg_dbin);
+	    reg_au = ext32(reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr32AipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e6 ablw1
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // d ablw2
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    setReg16Low(reg_at, reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpcAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_pc;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpciAipdProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_pc + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 3ad mmil1
+	    reg_aob = reg_da[rx_index];
+	    reg_dbout = reg_alue;
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    // 3ae mmil2
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 349 mmiw2
+	    reg_aob = reg_pc;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_da[rx_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongImm32AipdProgram()
@@ -58583,47 +62559,2166 @@ void m68kMoveLongAsDadProgram()
 
 void m68kMoveLongAisDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // b adrl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAipsDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // f pinl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 21a pinl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_au + 2;
+	    // 21b pinl3
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongPaisDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 179 pdcl1
+	    reg_au = reg_da[ry_index] - 4;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 17a pdcl2
+	    reg_aob = reg_au;
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDasDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDaisDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_da[ry_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr16DadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // e abww1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    reg_at = ext32(reg_dbin);
+	    reg_au = ext32(reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr32DadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e6 ablw1
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // d ablw2
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    setReg16Low(reg_at, reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 29):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 30):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 31):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 32):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpcDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_pc;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpciDadProgram()
 {
-    unknownInstr();
+    rx_index = mapSP(((reg_irdi >> 9) & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_pc + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38e mmdl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo) + reg_da[rx_index];
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongImm32DadProgram()
@@ -59236,47 +65331,2706 @@ void m68kMoveLongAsDaidProgram()
 
 void m68kMoveLongAisDaidProgram()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // b adrl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAipsDaidProgram()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // f pinl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 21a pinl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_au + 2;
+	    // 21b pinl3
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongPaisDaidProgram()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 179 pdcl1
+	    reg_au = reg_da[ry_index] - 4;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 17a pdcl2
+	    reg_aob = reg_au;
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDasDaidProgram()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDaisDaidProgram()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_da[ry_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(5, 4);
+	}
+	break;
+	case getCycle(4, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(6);
+	}
+	break;
+	case getCycle(5, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(6);
+	}
+	break;
+	case getCycle(6, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr16DaidProgram()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // e abww1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    reg_at = ext32(reg_dbin);
+	    reg_au = ext32(reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr32DaidProgram()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e6 ablw1
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // d ablw2
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    setReg16Low(reg_at, reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpcDaidProgram()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_pc;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpciDaidProgram()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_pc + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 29c mmxl0
+	    runALU(AluExt, reg_aluo);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    // 10d mmxl1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_pc = reg_au;
+	    reg_au = reg_da[rx_index] + ext32(reg_aluo);
+	    jumpCond2(5, 4);
+	}
+	break;
+	case getCycle(4, 0):
+	{
+	    // mmxl2
+	    // 2c mmxl2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(4, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(6);
+	}
+	break;
+	case getCycle(5, 0):
+	{
+	    // mmxl3
+	    // ec mmxl3
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(5, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    jump(6);
+	}
+	break;
+	case getCycle(6, 0):
+	{
+	    // mawl2
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 4):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 8):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(6, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongImm32DaidProgram()
@@ -59833,47 +68587,2157 @@ void m68kMoveLongAsAdr16Program()
 
 void m68kMoveLongAisAdr16Program()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // b adrl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAipsAdr16Program()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // f pinl1
+	    reg_aob = reg_da[ry_index];
+	    reg_au = reg_da[ry_index] + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 21a pinl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_au + 2;
+	    // 21b pinl3
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongPaisAdr16Program()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 179 pdcl1
+	    reg_au = reg_da[ry_index] - 4;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 17a pdcl2
+	    reg_aob = reg_au;
+	    reg_da[ry_index] = reg_au;
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDasAdr16Program()
 {
-    unknownInstr();
+    ry_index = mapSP((reg_irdi & 0x7) | 8);
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_da[ry_index];
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDaisAdr16Program()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_da[ry_index] + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr16Adr16Program()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // e abww1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    reg_at = ext32(reg_dbin);
+	    reg_au = ext32(reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongAdr32Adr16Program()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e6 ablw1
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // d ablw2
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_dcr = 0;
+	    setReg16Low(reg_at, reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // 8 ablw3
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 5 adrl2
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 29):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 30):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 31):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 32):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpcAdr16Program()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1c6 adsl1
+	    reg_aob = reg_au;
+	    reg_au = ext32(reg_dbin) + reg_pc;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 12):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 16):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 20):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 24):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 25):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 26):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 27):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 28):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongDpciAdr16Program()
 {
-    unknownInstr();
+    switch ((inst_cycle << 6) | inst_state)
+    {
+	case getCycle(0, 0):
+	{
+	    // 1e7 aixw0
+	    runALU(AluExt, reg_dbin);
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(0, 2):
+	{
+	    // 3e6 aixw1
+	    reg_aob = reg_au;
+	    reg_t = testbit(reg_irc, 11);
+	    reg_au = reg_pc + ext32(reg_aluo);
+	    jumpCond2(2, 1);
+	}
+	break;
+	case getCycle(1, 0):
+	{
+	    // aixw2
+	    // 124 aixw2
+	    reg_au = ext32(reg_da[mapSP(reg_irc >> 12)]) + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(1, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(2, 0):
+	{
+	    // aixw4
+	    // 1e4 aixw4
+	    reg_au = reg_da[mapSP(reg_irc >> 12)] + reg_au;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(2, 4):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    stepMovem();
+	    jump(3);
+	}
+	break;
+	case getCycle(3, 0):
+	{
+	    // adsl2
+	    // c adsl2
+	    reg_aob = reg_au;
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 1):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 2):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 3):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 4):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 26 adsl3
+	    reg_aob = reg_au;
+	    reg_alub = reg_dbin;
+	    reg_alue = reg_dbin;
+	    reg_at = reg_au;
+	    reg_au = reg_pc + 4;
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 5):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 6):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 7):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 8):
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 38c mawl1
+	    reg_aob = reg_au;
+	    reg_pc = reg_au;
+	    reg_au = ext32(reg_aluo);
+	    runALU(AluAnd, reg_dbin, 0xFFFF);
+	    updateCCR(CcrNZVC);
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 9):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 10):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 11):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 12):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 32f mawl2
+	    reg_aob = reg_au;
+	    reg_dbout = reg_alue;
+	    setReg16Low(reg_at, reg_aluo);
+	    reg_au = reg_au + 2;
+	    runALU(AluAnd, reg_alub, 0xFFFF);
+	    updateCCR(CcrNZU);
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 13):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 14):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 15):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 16):
+	{
+	    checkExcept();
+	    // 348 mawl3
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_at;
+	    reg_au = reg_pc + 2;
+	    setFC(true, false, false, false);
+	    writeWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 17):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 18):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 19):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 20):
+	{
+	    checkExcept();
+	    setFTUConst();
+	    setTrace();
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, false);
+	    readWord();
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 21):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 22):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 23):
+	{
+	    inst_cycle += 1;
+	}
+	break;
+	case getCycle(3, 24):
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
 }
 
 void m68kMoveLongImm32Adr16Program()
@@ -167083,7 +177947,7 @@ void m68kMulsWordDsDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -167255,7 +178119,7 @@ void m68kMulsWordAisDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -167431,7 +178295,7 @@ void m68kMulsWordAipsDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -167618,7 +178482,7 @@ void m68kMulsWordPaisDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -167819,7 +178683,7 @@ void m68kMulsWordDasDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -168081,7 +178945,7 @@ void m68kMulsWordDaisDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -168281,7 +179145,7 @@ void m68kMulsWordAdr16DdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -168509,7 +179373,7 @@ void m68kMulsWordAdr32DdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -168709,7 +179573,7 @@ void m68kMulsWordDpcDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -168971,7 +179835,7 @@ void m68kMulsWordDpciDdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
@@ -169143,7 +180007,7 @@ void m68kMulsWordImm16DdProgram()
 	{
 	    // mulm4
 	    // e0 mulm4
-	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : testbit(reg_alue, 1) ? 1 : 2;
+	    reg_t = ((reg_au & 0x3F) == 0) ? 0 : ((reg_alue & 0x3) == 1) ? 1 : ((reg_alue & 0x3) == 2) ? 2 : 3;
 	    setReg16Low(reg_pc, reg_at);
 	    reg_au = reg_au - 1;
 	    runALU(AluRoxrLongMs, reg_aluo);
