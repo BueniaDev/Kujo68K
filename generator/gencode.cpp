@@ -4083,21 +4083,6 @@ vector<string> generateCode(kujocode code)
 		    ss << "\t}\n";
 		    ss << "\tbreak;\n";
 		    ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		    ss << "\t{\n";
-		    ss << "\t    inst_cycle += 1;\n";
-		    ss << "\t}\n";
-		    ss << "\tbreak;\n";
-		    ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		    ss << "\t{\n";
-		    ss << "\t    inst_cycle += 1;\n";
-		    ss << "\t}\n";
-		    ss << "\tbreak;\n";
-		    ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		    ss << "\t{\n";
-		    ss << "\t    inst_cycle += 1;\n";
-		    ss << "\t}\n";
-		    ss << "\tbreak;\n";
-		    ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
 		    ss << "\t{";
 		    source.push_back(ss.str());
 

@@ -1,3 +1,5 @@
+bool be_debounced = !(is_bei || bei_delay);
+
 if (clk_fall)
 {
     reg_ipl = ((!current_pins.pin_ipl2n << 2) | (!current_pins.pin_ipl1n << 1) | (!current_pins.pin_ipl0n));
@@ -9,6 +11,10 @@ else if (clk_rise)
     is_vpai = current_pins.pin_vpan;
     is_bei = is_rberr;
     bei_delay = is_bei;
+
+    is_bgack = current_pins.pin_bgackn;
+
+    is_bri = current_pins.pin_brn;
 }
 
 bool is_nmi = (m_ipl == 7);
@@ -52,238 +58,251 @@ if (clk_fall)
     }
 }
 
-if (clk_rise)
+bus_available = true;
+
+bool is_access = (is_bus_access || is_cpu_access);
+if (clk_rise && !is_access)
 {
     callFunc();
 }
 
-if (is_cpu_access)
+bc_complete = (bus_state == S6);
+
+bool bc_reset = false;
+
+bool is_rmc_reset = (bc_complete && bc_reset && is_rmc_reg);
+
+bool bus_end = !current_pins.pin_dtack;
+
+if (clk_rise && (bus_state == S4) && is_cpu_access)
 {
-    switch (bus_state)
+    is_spurious = (!bei_delay && is_iac);
+    is_autovec = (!is_vpai && is_iac);
+}
+
+if (clk_fall && bc_complete && is_cpu_access)
+{
+    if (is_autovec)
     {
-	case S0:
-	{
-	    current_pins.pin_udsn = false;
-	    current_pins.pin_ldsn = false;
-	    current_pins.pin_rnw = true;
-	    bus_state = S1;
-	}
-	break;
-	case S1:
-	{
-	    current_pins.addr = ((reg_aob >> 1) & 0x7FFFFF);
-	    bus_state = S2;
-	}
-	break;
-	case S2:
-	{
-	    current_pins.pin_asn = false;
-	    bus_state = S3;
-	}
-	break;
-	case S3:
-	{
-	    bus_state = S4;
-	}
-	break;
-	case S4:
-	{
-	    is_spurious = (!bei_delay && is_iac);
-	    is_autovec = (!is_vpai && is_iac);
-	    bus_state = S5;
-	}
-	break;
-	case S5:
-	{
-	    bus_state = S6;
-	}
-	break;
-	case S6:
-	{
-	    bus_state = S7;
-	}
-	break;
-	case S7:
-	{
-	    current_pins.pin_asn = true;
-	    current_pins.pin_udsn = true;
-	    current_pins.pin_ldsn = true;
-
-	    if (is_autovec)
-	    {
-		int level = (current_pins.addr & 0x7);
-		reg_edb = (0x18 + level);
-	    }
-	    else if (is_spurious)
-	    {
-		reg_edb = 0x18;
-	    }
-	    else
-	    {
-		reg_edb = current_pins.data;
-	    }
-
-	    is_cpu_access = false;
-	    bus_state = Idle;
-	}
-	break;
-	default:
-	{
-	    cout << "Unrecognized CPU bus state of " << dec << int(bus_state) << endl;
-	    throw runtime_error("Kujo68K error");
-	}
-	break;
+	int level = ((reg_aob >> 1) & 0x7);
+	reg_edb = (0x18 + level);
+    }
+    else if (is_spurious)
+    {
+	reg_edb = 0x18;
+    }
+    else
+    {
+	reg_edb = current_pins.data;
     }
 }
 
-if (is_bus_access)
+bool is_bus_s6 = is_bus_access;
+
+if (clk_fall && bc_complete)
 {
-    switch (bus_state)
+    is_bus_access = false;
+    is_cpu_access = false;
+}
+
+bool is_perm_start = (is_bus_access || is_cpu_access);
+
+bus_can_start = (bus_available && is_perm_start && !bc_reset);
+
+switch (bus_state)
+{
+    case Idle:
     {
-	case S0:
+	if (bus_can_start)
 	{
-	    current_pins.pin_rnw = true;
-	    bus_state = S1;
+	    next_bus_state = S0;
 	}
-	break;
-	case S1:
+	else
 	{
-	    current_pins.addr = ((reg_aob >> 1) & 0x7FFFFF);
-	    bus_state = S2;
+	    next_bus_state = Idle;
 	}
-	break;
-	case S2:
+    }
+    break;
+    case S0:
+    {
+	next_bus_state = S2;
+    }
+    break;
+    case S2:
+    {
+	next_bus_state = S4;
+    }
+    break;
+    case S4:
+    {
+	if (bus_end)
 	{
-	    current_pins.pin_asn = false;
+	    next_bus_state = S6;
+	}
+	else
+	{
+	    next_bus_state = S4;
+	}
+    }
+    break;
+    case S6:
+    {
+	if (is_rmc_reset)
+	{
+	    next_bus_state = RmcRes;
+	}
+	else if (bus_can_start)
+	{
+	    next_bus_state = S0;
+	}
+	else
+	{
+	    next_bus_state = Idle;
+	}
+    }
+    break;
+    default:
+    {
+	cout << "Unrecognized bus state of " << dec << int(bus_state) << endl;
+	throw runtime_error("Kujo68K error");
+    }
+    break;
+}
 
-	    if (is_read)
-	    {
-		if (is_word)
-		{
-		    current_pins.pin_udsn = false;
-		    current_pins.pin_ldsn = false;
-		}
-		else
-		{
-		    current_pins.pin_udsn = testbit(reg_aob, 0);
-		    current_pins.pin_ldsn = !testbit(reg_aob, 0);
-		}
-	    }
-	    else if (is_rmc)
-	    {
-		cout << "RMC read occured, S2" << endl;
-		throw runtime_error("Kujo68K error");
-	    }
-	    else
-	    {
-		current_pins.pin_rnw = false;
-	    }
+bool bus_ending = ((next_bus_state == Idle) || (next_bus_state == S0));
 
-	    bus_state = S3;
-	}
-	break;
-	case S3:
-	{
-	    if (!is_read && !is_rmc)
-	    {
-		current_pins.data = reg_dbout;
-	    }
+if (clk_rise)
+{
+    bus_state = next_bus_state;
+}
 
-	    bus_state = S4;
-	}
-	break;
-	case S4:
-	{
-	    if (!is_read && !is_rmc)
-	    {
-		if (is_word)
-		{
-		    current_pins.pin_udsn = false;
-		    current_pins.pin_ldsn = false;
-		}
-		else
-		{
-		    current_pins.pin_udsn = testbit(reg_aob, 0);
-		    current_pins.pin_ldsn = !testbit(reg_aob, 0);
-		}
-	    }
+if (clk_fall && (bus_state == S0))
+{
+    addr_oe = true;
+}
+else if (clk_rise && (bus_state == RmcRes))
+{
+    addr_oe = false;
+}
+else if (clk_rise && !is_rmc_reg && bus_ending)
+{
+    addr_oe = false;
+}
 
-	    bool end_signal = !current_pins.pin_dtack;
+if (clk_fall && !is_read && (bus_state == S2))
+{
+    data_oe = true;
+}
+else if (clk_rise && (bus_ending || (bus_state == Idle)))
+{
+    data_oe = false;
+}
 
-	    if (!end_signal)
-	    {
-		cout << "Delay occuring..." << endl;
-		throw runtime_error("Kujo68K error");
-	    }
-	    else
-	    {
-		bus_state = S5;
-	    }
-	}
-	break;
-	case S5:
-	{
-	    bus_state = S6;
-	}
-	break;
-	case S6:
-	{
-	    if (is_read)
-	    {
-		reg_edb = current_pins.data;
-
-		if (!is_word)
-		{
-		    if (!testbit(reg_aob, 0))
-		    {
-			reg_edb >>= 8;
-		    }
-		}
-
-		current_pins.pin_asn = true;
-		current_pins.pin_udsn = true;
-		current_pins.pin_ldsn = true;
-	    }
-	    else if (is_rmc)
-	    {
-		cout << "RMC read occured, S6" << endl;
-		throw runtime_error("Kujo68K error");
-	    }
-	    else
-	    {
-		current_pins.pin_asn = true;
-		current_pins.pin_udsn = true;
-		current_pins.pin_ldsn = true;
-	    }
-	    
-	    bus_state = S7;
-	}
-	break;
-	case S7:
-	{
-	    if (!is_read && !is_rmc)
-	    {
-		current_pins.pin_rnw = true;
-		is_bus_access = false;
-		bus_state = Idle;
-	    }
-	    else if (is_rmc)
-	    {
-		cout << "RMC read occured, S7" << endl;
-		throw runtime_error("Kujo68K error");
-	    }
-	    else
-	    {
-		is_bus_access = false;
-		bus_state = Idle;
-	    }
-	}
-	break;
-	default:
-	{
-	    cout << "Unrecognized bus state of " << dec << int(bus_state) << endl;
-	    throw runtime_error("Kujo68K error");
-	}
-	break;
+if (clk_rise && bus_ending)
+{
+    current_pins.pin_rnw = true;
+}
+else if (clk_rise && !is_read)
+{
+    if (bus_state == S2)
+    {
+	current_pins.pin_rnw = false;
     }
 }
+
+if (addr_oe)
+{
+    if (true)
+    {
+	current_pins.addr = ((reg_aob >> 1) & 0x7FFFFF);
+    }
+    else
+    {
+	cout << "M68008 address OE" << endl;
+	throw runtime_error("Kujo68K error");
+    }
+}
+
+if (data_oe)
+{
+    if (true)
+    {
+	current_pins.data = reg_dbout;
+    }
+    else
+    {
+	cout << "M68008 data OE" << endl;
+	throw runtime_error("Kujo68K error");
+    }
+}
+
+if (clk_rise && (bus_state == S6) && is_read && is_bus_s6)
+{
+    if (true)
+    {
+	reg_edb = current_pins.data;
+
+	if (!is_word && !testbit(reg_aob, 0))
+	{
+	    reg_edb >>= 8;
+	}
+    }
+    else
+    {
+	cout << "M68008 data latch" << endl;
+	throw runtime_error("Kujo68K error");
+    }
+}
+
+
+if (clk_rise && (bus_state == S0))
+{
+    current_pins.pin_asn = false;
+}
+else if (clk_fall && (bus_state == RmcRes))
+{
+    current_pins.pin_asn = true;
+}
+else if (clk_fall && bc_complete)
+{
+    if (!is_rmc_reg)
+    {
+	current_pins.pin_asn = true;
+    }
+}
+
+if (clk_rise && (bus_state == S0))
+{
+    if (is_read)
+    {
+	if (true)
+	{
+	    current_pins.pin_udsn = !(is_word || !testbit(reg_aob, 0));
+	    current_pins.pin_ldsn = !(is_word || testbit(reg_aob, 0));
+	}
+	else
+	{
+	    cout << "M68008 DS pin read" << endl;
+	    throw runtime_error("Kujo68K error");
+	}
+    }
+}
+else if (clk_rise && !is_read && (bus_state == S2))
+{
+    if (true)
+    {
+	current_pins.pin_udsn = !(is_word || !testbit(reg_aob, 0));
+	current_pins.pin_ldsn = !(is_word || testbit(reg_aob, 0));
+    }
+    else
+    {
+	cout << "M68008 DS pin write" << endl;
+	throw runtime_error("Kujo68K error");
+    }
+}
+else if (clk_fall && bc_complete)
+{
+    current_pins.pin_udsn = true;
+    current_pins.pin_ldsn = true;
+}
+

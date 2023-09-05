@@ -165,13 +165,13 @@ void setReg8ExHigh(uint16_t &reg, uint16_t value)
 
 void readWordCPU()
 {
-    bus_state = S0;
+    startMemIO();
     is_cpu_access = true;
 }
 
 void readWord()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = true;
     is_word = true;
     is_rmc = false;
@@ -180,7 +180,7 @@ void readWord()
 
 void writeWord()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = false;
     is_word = true;
     is_rmc = false;
@@ -189,7 +189,7 @@ void writeWord()
 
 void readByte()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = true;
     is_word = false;
     is_rmc = false;
@@ -198,7 +198,7 @@ void readByte()
 
 void writeByte()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = false;
     is_word = false;
     is_rmc = false;
@@ -207,7 +207,7 @@ void writeByte()
 
 void readRMC()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = true;
     is_word = false;
     is_rmc = true;
@@ -216,7 +216,7 @@ void readRMC()
 
 void writeRMC()
 {
-    bus_state = S0;
+    startMemIO();
     is_read = false;
     is_word = false;
     is_rmc = true;

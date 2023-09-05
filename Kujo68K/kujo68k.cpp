@@ -58,6 +58,7 @@ namespace kujo68k
 	inst_state = 0;
 	inst_cycle = 0;
 	reg_inl = 7;
+	is_reset = true;
     }
 
     void Kujo68K::tickCLK(bool clk)
@@ -73,7 +74,9 @@ namespace kujo68k
 	}
 	else if (!prev_res && current_pins.pin_nres)
 	{
+	    is_reset = false;
 	    instr_decode = getFunction(ResetDp);
+	    // instr_decode = getFunction(Test);
 	}
 	else if (prev_clk != clk)
 	{

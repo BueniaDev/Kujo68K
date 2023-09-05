@@ -125,9 +125,22 @@ namespace kujo68k
 	bool pin_fc1 = false;
 	bool pin_fc2 = false;
 	bool pin_brn = true;
+	bool pin_bgn = true;
 	bool pin_berrn = true;
 	bool pin_bgackn = true;
 	bool pin_e = false;
+    };
+
+    enum DMAPhase
+    {
+	DmaReset = 0,
+	DmaIdle,
+	DmaD1,
+	DmaBr,
+	DmaBa,
+	DmaBra,
+	DmaD3,
+	DmaD2,
     };
 
     enum BusState
@@ -140,7 +153,8 @@ namespace kujo68k
 	S4,
 	S5,
 	S6,
-	S7
+	S7,
+	RmcRes,
     };
 
     class Kujo68K
@@ -156,6 +170,11 @@ namespace kujo68k
 	    Kujo68KPins &getPins()
 	    {
 		return current_pins;
+	    }
+
+	    uint32_t getPC()
+	    {
+		return reg_pc;
 	    }
 
 	    uint32_t getDataReg(int reg)
@@ -189,7 +208,6 @@ namespace kujo68k
 		cout << "IRD: " << hex << int(reg_ird) << endl;
 		cout << "IR: " << hex << int(reg_ir) << endl;
 		cout << "IRC: " << hex << int(reg_irc) << endl;
-
 		cout << endl;
 	    }
 
@@ -221,6 +239,8 @@ namespace kujo68k
 	    #include "programs.inl"
 	    #include "ir_decode.inl"
 
+	    bool is_reset = false;
+
 	    bool is_bus_access = false;
 	    bool is_read = false;
 	    bool is_rmc = false;
@@ -238,6 +258,11 @@ namespace kujo68k
 	    int inst_state = 0;
 
 	    BusState bus_state = Idle;
+	    BusState next_bus_state = Idle;
+	    DMAPhase dma_phase = DmaReset;
+	    DMAPhase next_dma_phase = DmaReset;
+
+	    bool is_access = false;
 
 	    uint16_t reg_irdi = 0;
 	    uint16_t reg_ird = 0;
@@ -282,8 +307,28 @@ namespace kujo68k
 
 	    bool bei_delay = false;
 	    bool is_bei = false;
+	    bool is_bri = false;
+	    bool is_bgack = false;
+	    bool is_granted = false;
 	    bool is_rberr = false;
 	    bool is_vpai = false;
+
+	    bool bus_available = false;
+	    bool is_bc_reset = false;
+	    bool bg_block = false;
+	    bool bus_can_start = false;
+	    bool bc_complete = false;
+	    bool is_cpu_cycle = false;
+	    bool is_rmc_reg = false;
+
+	    bool can_start = false;
+
+	    bool addr_oe_delay = false;
+	    bool addr_oe = false;
+
+	    bool data_oe = true;
+
+	    bool bc_pend = false;
 
 	    bool prev_nmi = false;
 	    bool is_nmi_occured = false;
@@ -318,6 +363,11 @@ namespace kujo68k
 	    {
 		cout << "Unrecognized inst state of " << dec << int(inst_state) << ", cycle of " << dec << int(inst_cycle) << endl;
 		throw runtime_error("Kujo68K error");
+	    }
+
+	    void startMemIO()
+	    {
+		is_rmc_reg = (is_rmc && is_read);
 	    }
     };
 };
