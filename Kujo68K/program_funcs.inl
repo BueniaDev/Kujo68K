@@ -166,6 +166,9 @@ void setReg8ExHigh(uint16_t &reg, uint16_t value)
 void readWordCPU()
 {
     startMemIO();
+    is_read = true;
+    is_word = true;
+    is_rmc = false;
     is_cpu_access = true;
 }
 
