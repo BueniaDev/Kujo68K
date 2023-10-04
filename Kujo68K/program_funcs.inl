@@ -6,7 +6,7 @@ void unknownInstr()
 
 void setIntState()
 {
-    if (next_state != Trace)
+    if (next_state != STrace)
     {
 	next_state = int_next_state;
     }
@@ -450,11 +450,11 @@ void updateInterrupts()
     {
 	if (is_nmi_occured)
 	{
-	    int_next_state = (Interrupt | (7 << 24));
+	    int_next_state = (SInterrupt | (7 << 24));
 	}
 	else
 	{
-	    int_next_state = (Interrupt | (reg_inl << 24));
+	    int_next_state = (SInterrupt | (reg_inl << 24));
 	}
     }
     else
@@ -479,15 +479,15 @@ void setTrace()
 {
     if (testbit(reg_sr, 15))
     {
-	next_state = Trace;
+	int_next_state = STrace;
     }
 }
 
 void clearTrace()
 {
-    if (next_state == Trace)
+    if (int_next_state == STrace)
     {
-	next_state = 0;
+	int_next_state = 0;
     }
 }
 
@@ -505,35 +505,17 @@ void setPriv()
 void nextInst()
 {
     reg_irdi = reg_ird;
-    inst_state = 0;
+    inst_state = (next_state != 0) ? next_state : decode_table.at(reg_ird);
     inst_cycle = 0;
 
-    if (next_state != 0)
-    {
-	instr_decode = getStateFunc(next_state);
-    }
-    else
-    {
-	instr_decode = decode_table.at(reg_ird).func;
-    }
-
-    callFunc();
+    // callFunc();
 }
 
 void nextTrace()
 {
     reg_irdi = reg_ird;
-    inst_state = 0;
+    inst_state = (next_state != 0) ? next_state : decode_table.at(reg_ird);
     inst_cycle = 0;
-
-    if (next_state != 0)
-    {
-	instr_decode = getStateFunc(next_state);
-    }
-    else
-    {
-	instr_decode = decode_table.at(reg_ird).func;
-    }
 
     if (testbit(reg_sr, 15))
     {
@@ -541,20 +523,20 @@ void nextTrace()
 	throw runtime_error("Kujo68K error");
     }
 
-    callFunc();
+    // callFunc();
 }
 
-uint32_t ext32(uint16_t value)
+static uint32_t ext32(uint16_t value)
 {
     return int32_t(int16_t(value));
 }
 
-uint16_t high16(uint32_t value)
+static uint16_t high16(uint32_t value)
 {
     return (value >> 16);
 }
 
-uint32_t merge32(uint16_t high, uint16_t low)
+static uint32_t merge32(uint16_t high, uint16_t low)
 {
     return ((high << 16) | low);
 }
@@ -564,6 +546,7 @@ void trapExcept(uint8_t)
     return;
 }
 
+/*
 void jumpCond2(int state1, int state0)
 {
     if (reg_t != 0)
@@ -624,6 +607,7 @@ void jump(int state_num)
     inst_cycle = 0;
     callFunc();
 }
+*/
 
 int mapSP(int val)
 {

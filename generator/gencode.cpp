@@ -3293,7 +3293,11 @@ kujocode genKujocode(vector<KujoM68KBlock> blocks, uint16_t ir, uint16_t ir_mask
 	{
 	    if (block.extra.empty())
 	    {
-		if (cb.back().tag != "setTrace")
+		if (cb.back().tag == "step")
+		{
+		    cb.back() = {"nextStep"};
+		}
+		else if (cb.back().tag != "setTrace")
 		{
 		    cb.push_back({"nextInst"});
 		}
@@ -3310,7 +3314,7 @@ kujocode genKujocode(vector<KujoM68KBlock> blocks, uint16_t ir, uint16_t ir_mask
 	    else
 	    {
 		int index = getValue(block.extra.at(0));
-		cb.push_back({"goto", {getInt(index)}});
+		cb.push_back({"goto", {labelName(blocks.at(index).val)}});
 	    }
 	}
 	else
@@ -3319,7 +3323,7 @@ kujocode genKujocode(vector<KujoM68KBlock> blocks, uint16_t ir, uint16_t ir_mask
 	    for (auto &ex : block.extra)
 	    {
 		uint16_t val = getValue(ex);
-		args.push_back(getInt(val));
+		args.push_back(labelName(blocks.at(val).val));
 	    }
 
 	    cb.push_back({"cgoto", args});
@@ -3331,7 +3335,7 @@ kujocode genKujocode(vector<KujoM68KBlock> blocks, uint16_t ir, uint16_t ir_mask
     return code;
 }
 
-void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &seen, deque<string> bus_access, int i, bool &critical)
+void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &seen, deque<string> bus_access, int i, int &cycle, bool &critical)
 {
     if (seen.find(i) != seen.end())
     {
@@ -3342,7 +3346,12 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 
     for (auto &ci : code.at(i))
     {
-	if (ci.tag == "setBus")
+	if ((ci.tag == "step") || (ci.tag == "nextStep"))
+	{
+	    ci.args.push_back(getInt(cycle));
+	    cycle += 2;
+	}
+	else if (ci.tag == "setBus")
 	{
 	    bus_access = ci.args;
 	}
@@ -3351,6 +3360,8 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 	    auto sr_update = ci.args.front();
 	    ci.args.pop_front();
 
+	    ci.args.push_back(getInt(cycle));
+
 	    for (auto &arg : bus_access)
 	    {
 		ci.args.push_back(arg);
@@ -3358,6 +3369,9 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 
 	    ci.args.push_back(getBool(critical));
 	    ci.args.push_back(sr_update);
+
+	    // TODO: Figure out the correct value to use here
+	    cycle += 1;
 	}
 	else if (ci.tag == "dropCritical")
 	{
@@ -3367,7 +3381,7 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 
     for (auto &nc : blocks.at(i).extra)
     {
-	propagate(blocks, code, seen, bus_access, getValue(nc), critical);
+	propagate(blocks, code, seen, bus_access, getValue(nc), cycle, critical);
     }
 }
 
@@ -3375,7 +3389,8 @@ void propagateBusAccess(vector<KujoM68KBlock> blocks, kujocode &code, bool criti
 {
     map<int, bool> seen = {};
     deque<string> bus_access;
-    propagate(blocks, code, seen, bus_access, 0, critical);
+    int cycle = 1;
+    propagate(blocks, code, seen, bus_access, 0, cycle, critical);
 }
 
 void fromReg(string val, unordered_map<string, string> &usage)
@@ -3827,27 +3842,15 @@ vector<string> generateCode(kujocode code)
 	source.push_back("    ry_index = mapSP((reg_irdi & 0x7) | 8);");
     }
 
-    source.push_back("    switch ((inst_cycle << 6) | inst_state)");
+    source.push_back("    switch (inst_cycle)");
     source.push_back("    {");
-    source.push_back("\tcase getCycle(0, 0):");
+    source.push_back("\tcase 0:");
     source.push_back("\t{");
 
-    int num_states = 0;
+    int num_cycles = 1;
 
     for (auto &cib : code)
     {
-	if (num_states > 0)
-	{
-	    stringstream ss;
-	    ss << "\t}\n";
-	    ss << "\tbreak;\n";
-	    ss << "\tcase getCycle(" << dec << int(num_states) << ", 0):\n";
-	    ss << "\t{";
-	    source.push_back(ss.str());
-	}
-
-	int num_cycles = 1;
-
 	for (auto &ci : cib)
 	{
 	    if (ci.tag == "comment")
@@ -3856,30 +3859,31 @@ vector<string> generateCode(kujocode code)
 		ss << "\t    // " << ci.args.at(0);
 		source.push_back(ss.str());
 	    }
-	    else if (ci.tag == "priv")
-	    {
-		stringstream ss;
-		ss << "\t    if (!checkPriv())\n";
-		ss << "\t    {\n";
-		ss << "\t\tsetPriv();\n";
-		ss << "\t\treturn;\n";
-		ss << "\t    }\n";
-		source.push_back(ss.str());
-	    }
 	    else if (ci.tag == "step")
 	    {
-		stringstream ss;
-		ss << "\t    inst_cycle += 1;\n";
-		ss << "\t}\n";
-		ss << "\tbreak;\n";
-		ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		ss << "\t{\n";
-		ss << "\t    inst_cycle += 1;\n";
-		ss << "\t}\n";
-		ss << "\tbreak;\n";
-		ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		ss << "\t{";
-		source.push_back(ss.str());
+		int cycle = toInt(ci.args.at(0));
+
+		for (int i = 0; i < 2; i++)
+		{
+		    stringstream ss0;
+		    ss0 << "\t    inst_cycle = " << dec << int(cycle) << ";";
+		    source.push_back(ss0.str());
+		    source.push_back("\t}");
+		    source.push_back("\tbreak;");
+
+		    stringstream ss1;
+		    ss1 << "\tcase " << dec << int(cycle++) << ":";
+		    source.push_back(ss1.str());
+		    source.push_back("\t{");
+		}
+	    }
+	    else if (ci.tag == "priv")
+	    {
+		source.push_back("\tif (!testbit(reg_sr, 13))");
+		source.push_back("\t{");
+		source.push_back("\t    setPriv();");
+		source.push_back("\t    return;");
+		source.push_back("\t}");
 	    }
 	    else if (ci.tag == "set")
 	    {
@@ -3958,218 +3962,19 @@ vector<string> generateCode(kujocode code)
 		ss << "\t    setReg16Low(" << reg << ", " << expr << ");";
 		source.push_back(ss.str());
 	    }
-	    else if (ci.tag == "setBus")
-	    {
-		continue;
-	    }
-	    else if (ci.tag == "setBusEnd")
-	    {
-		stringstream ss0;
-		ss0 << "\t    setFC(" << ci.args.at(0) << ", " << ci.args.at(1);
-
-		if (toInt(ci.args.at(3)) == 0)
-		{
-		    ss0 << ", true";
-		}
-		else
-		{
-		    ss0 << ", false";
-		}
-
-		if (isTrue(ci.args.at(6)))
-		{
-		    ss0 << ", true";
-		}
-		else
-		{
-		    ss0 << ", false";
-		}
-
-		ss0 << ");";
-		source.push_back(ss0.str());
-
-		if (isTrue(ci.args.at(8)))
-		{
-		    source.push_back("\t    setCritical();");
-		}
-
-		bool is_irq_vector_lookup = (toInt(ci.args.at(3)) == 0) && (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)));
-
-		if (is_irq_vector_lookup)
-		{
-		    source.push_back("\t    startIRQVectorLookup();");
-		}
-
-		int access_steps = 1;
-
-		for (int i = 0; i < access_steps; i++)
-		{
-		    if (toInt(ci.args.at(3)) != 0)
-		    {
-			if (isTrue(ci.args.at(2)))
-			{
-			    if (isTrue(ci.args.at(7)))
-			    {
-				source.push_back("\t    writeRMC();");
-			    }
-			    else if (false)
-			    {
-				source.push_back("\t    writeByte();");
-			    }
-			    else
-			    {
-				source.push_back("\t    writeByte();");
-			    }
-			}
-			else if (false)
-			{
-			    source.push_back("\t    writeByte();");
-			}
-			else
-			{
-			    source.push_back("\t    writeWord();");
-			}
-		    }
-		    else
-		    {
-			if (isTrue(ci.args.at(7)))
-			{
-			    source.push_back("\t    readRMC();");
-			}
-			else if (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)))
-			{
-			    if (false)
-			    {
-				source.push_back("\t    readByteCPU();");
-		 	    }
-			    else
-			    {
-				source.push_back("\t    readWordCPU();");
-			    }
-			}
-			else if (isTrue(ci.args.at(2)))
-			{
-			    if (false)
-			    {
-				source.push_back("\t    readByte();");
-			    }
-			    else
-			    {
-				source.push_back("\t    readByte();");
-			    }
-			}
-			else
-			{
-			    if (false)
-			    {
-				if (i == 1)
-				{
-				    source.push_back("\t    readByte(true);");
-				}
-				else
-				{
-				    source.push_back("\t    readByte(false);");
-				}
-			    }
-			    else
-			    {
-				source.push_back("\t    readWord();");
-			    }
-			}
-		    }
-
-		    stringstream ss;
-		    ss << "\t    inst_cycle += 1;\n";
-		    ss << "\t}\n";
-		    ss << "\tbreak;\n";
-		    ss << "\tcase getCycle(" << dec << int(num_states) << ", " << dec << int(num_cycles++) << "):\n";
-		    ss << "\t{";
-		    source.push_back(ss.str());
-
-		    if (isTrue(ci.args.at(9)))
-		    {
-			source.push_back("\t    updateSR();");
-		    }
-		}
-
-		if (is_irq_vector_lookup)
-		{
-		    source.push_back("\t    endIRQVectorLookup();");
-		}
-
-		bool not_fc = (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)));
-
-		if (isFalse(ci.args.at(2)) && (!not_fc || !false))
-		{
-		    source.push_back("\t    checkExcept();");
-		}
-	    }
-	    else if (ci.tag == "setTrace")
-	    {
-		source.push_back("\t    setTrace();");
-	    }
-	    else if (ci.tag == "clearTrace")
-	    {
-		source.push_back("\t    clearTrace();");
-	    }
-	    else if (ci.tag == "nextInst")
-	    {
-		source.push_back("\t    nextInst();");
-	    }
-	    else if (ci.tag == "nextTrace")
-	    {
-		source.push_back("\t    nextTrace();");
-	    }
-	    else if (ci.tag == "setSR")
-	    {
-		string reg = regname.at(toInt(ci.args.at(0)));
-		auto args = ci.args;
-		args.pop_front();
-		string expr = makeExpression(args);
-
-		stringstream ss;
-		ss << "\t    " << reg << " = reg_isr = (" << expr << " & 0xA71F);";
-		source.push_back(ss.str());
-
-		source.push_back("\t    updateSupervisor();");
-		source.push_back("\t    updateInterrupts();");
-	    }
-	    else if (ci.tag == "setCCR")
-	    {
-		string reg = regname.at(toInt(ci.args.at(0)));
-		auto args = ci.args;
-		args.pop_front();
-		string expr = makeExpression(args);
-
-		stringstream ss;
-		ss << "\t    " << reg << " = reg_isr = ((" << expr << " & 0x1F) | (" << reg << " & 0xA700));";
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "setSRD")
-	    {
-		auto args = ci.args;
-		args.pop_front();
-		string expr = makeExpression(args);
-
-		stringstream ss;
-		ss << "\t    reg_new_sr = reg_isr = (" << expr << " & 0xA71F);";
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "setSRI")
-	    {
-		source.push_back("\t    reg_sr = ((reg_sr & ~0x700) | ((next_state >> 16) & 0x700));");
-		source.push_back("\t    updateInterrupts();");
-	    }
-	    else if (ci.tag == "setSRI7")
-	    {
-		source.push_back("\t    reg_sr |= 0x700;");
-		source.push_back("\t    updateInterrupts();");
-	    }
 	    else if (ci.tag == "state")
 	    {
 		stringstream ss;
 		ss << "\t    " << ci.args.at(0) << "();";
 		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "setLines")
+	    {
+		continue;
+	    }
+	    else if (ci.tag == "dropCritical")
+	    {
+		continue;
 	    }
 	    else if (ci.tag == "alu")
 	    {
@@ -4205,50 +4010,197 @@ vector<string> generateCode(kujocode code)
 		    source.push_back(ss2.str());
 		}
 	    }
-	    else if ((ci.tag == "setLines") || (ci.tag == "dropCritical"))
+	    else if (ci.tag == "setSR")
+	    {
+		string reg = regname.at(toInt(ci.args.at(0)));
+		auto args = ci.args;
+		args.pop_front();
+		string expr = makeExpression(args);
+
+		stringstream ss;
+		ss << "\t    " << reg << " = reg_isr = (" << expr << " & 0xA71F);";
+		source.push_back(ss.str());
+
+		source.push_back("updateSupervisor();");
+		source.push_back("updateInterrupts();");
+	    }
+	    else if (ci.tag == "setCCR")
+	    {
+		string reg = regname.at(toInt(ci.args.at(0)));
+		auto args = ci.args;
+		args.pop_front();
+		string expr = makeExpression(args);
+
+		stringstream ss;
+		ss << "\t    " << reg << " = reg_isr = ((" << expr << " & 0x1F) | (" << reg << " & 0xA700));";
+		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "setSRD")
+	    {
+		auto args = ci.args;
+		args.pop_front();
+		string expr = makeExpression(args);
+
+		stringstream ss;
+		ss << "\t    reg_new_sr = reg_isr = (" << expr << " & 0xA71F);";
+		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "setSRI")
+	    {
+		source.push_back("\t    reg_sr = ((reg_sr & ~0x700) | ((next_state >> 16) & 0x700));");
+		source.push_back("\t    updateInterrupts();");
+	    }
+	    else if (ci.tag == "setSRI7")
+	    {
+		source.push_back("\t    reg_sr |= 0x700;");
+		source.push_back("\t    updateInterrupts();");
+	    }
+	    else if (ci.tag == "setBus")
 	    {
 		continue;
 	    }
-	    else if (ci.tag == "setCond")
+	    else if (ci.tag == "setBusEnd")
 	    {
-		stringstream ss;
-		ss << "\t    reg_t = " << ci.args.at(0) << ";";
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "goto")
-	    {
-		stringstream ss;
-		ss << "\t    jump(" << ci.args.at(0) << ");";
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "cgoto")
-	    {
-		stringstream ss;
+		int cycle = toInt(ci.args.at(0));
+		stringstream ss0;
+		ss0 << "\t    setFC(" << ci.args.at(1) << ", " << ci.args.at(2);
 
-		if (ci.args.size() == 2)
+		if (toInt(ci.args.at(4)) == 0)
 		{
-		    ss << "\t    jumpCond2(" << ci.args.at(1) << ", " << ci.args.at(0) << ");";
+		    ss0 << ", true";
 		}
-		else if (ci.args.size() == 3)
+		else
 		{
-		    ss << "\t    jumpCond3(" << ci.args.at(2) << ", " << ci.args.at(1) << ", " << ci.args.at(0) << ");";
-		}
-		else if (ci.args.size() == 4)
-		{
-		    ss << "\t    jumpCond4(" << ci.args.at(3) << ", " << ci.args.at(2) << ", " << ci.args.at(1) << ", " << ci.args.at(0) << ");";
+		    ss0 << ", false";
 		}
 
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "label")
-	    {
-		stringstream ss;
-		ss << "\t    // " << ci.args.at(0);
-		source.push_back(ss.str());
-	    }
-	    else if (ci.tag == "halt")
-	    {
-		source.push_back("\t    return;");
+		if (isTrue(ci.args.at(7)))
+		{
+		    ss0 << ", true";
+		}
+		else
+		{
+		    ss0 << ", false";
+		}
+
+		ss0 << ");";
+		source.push_back(ss0.str());
+
+		if (isTrue(ci.args.at(9)))
+		{
+		    source.push_back("\t    setCritical();");
+		}
+
+		bool is_irq_vector_lookup = (toInt(ci.args.at(4)) == 0) && (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)));
+
+		if (is_irq_vector_lookup)
+		{
+		    source.push_back("\t    startIRQVectorLookup();");
+		}
+
+		int access_steps = 1;
+
+		for (int i = 0; i < access_steps; i++)
+		{
+		    if (toInt(ci.args.at(4)) != 0)
+		    {
+			if (isTrue(ci.args.at(3)))
+			{
+			    if (isTrue(ci.args.at(8)))
+			    {
+				source.push_back("\t    writeRMC();");
+			    }
+			    else if (false)
+			    {
+				source.push_back("\t    writeByte();");
+			    }
+			    else
+			    {
+				source.push_back("\t    writeByte();");
+			    }
+			}
+			else if (false)
+			{
+			    source.push_back("\t    writeByte();");
+			}
+			else
+			{
+			    source.push_back("\t    writeWord();");
+			}
+		    }
+		    else
+		    {
+			if (isTrue(ci.args.at(8)))
+			{
+			    source.push_back("\t    readRMC();");
+			}
+			else if (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)))
+			{
+			    if (false)
+			    {
+				source.push_back("\t    readByteCPU();");
+		 	    }
+			    else
+			    {
+				source.push_back("\t    readWordCPU();");
+			    }
+			}
+			else if (isTrue(ci.args.at(3)))
+			{
+			    if (false)
+			    {
+				source.push_back("\t    readByte();");
+			    }
+			    else
+			    {
+				source.push_back("\t    readByte();");
+			    }
+			}
+			else
+			{
+			    if (false)
+			    {
+				if (i == 1)
+				{
+				    source.push_back("\t    readByte(true);");
+				}
+				else
+				{
+				    source.push_back("\t    readByte(false);");
+				}
+			    }
+			    else
+			    {
+				source.push_back("\t    readWord();");
+			    }
+			}
+		    }
+
+		    stringstream ss;
+		    ss << "\t    inst_cycle = " << dec << int(cycle) << ";\n";
+		    ss << "\t}\n";
+		    ss << "\tbreak;\n";
+		    ss << "\tcase " << dec << int(cycle++) << ":\n";
+		    ss << "\t{";
+		    source.push_back(ss.str());
+
+		    if (isTrue(ci.args.at(10)))
+		    {
+			source.push_back("\t    updateSR();");
+		    }
+		}
+
+		if (is_irq_vector_lookup)
+		{
+		    source.push_back("\t    endIRQVectorLookup();");
+		}
+
+		bool not_fc = (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)));
+
+		if (isFalse(ci.args.at(3)) && (!not_fc || !false))
+		{
+		    source.push_back("\t    checkExcept();");
+		}
 	    }
 	    else if (ci.tag == "trap")
 	    {
@@ -4267,25 +4219,143 @@ vector<string> generateCode(kujocode code)
 		    source.push_back(ss.str());
 		}
 	    }
+	    else if (ci.tag == "halt")
+	    {
+		source.push_back("\t    return;");
+	    }
+	    else if (ci.tag == "setTrace")
+	    {
+		source.push_back("\t    setTrace();");
+	    }
+	    else if (ci.tag == "clearTrace")
+	    {
+		source.push_back("\t    clearTrace();");
+	    }
+	    else if (ci.tag == "nextStep")
+	    {
+		int cycle = toInt(ci.args.at(0));
+
+		stringstream ss0;
+		ss0 << "\t    inst_cycle = " << dec << int(cycle) << ";";
+		source.push_back(ss0.str());
+		source.push_back("}");
+		source.push_back("break;");
+		stringstream ss1;
+		ss1 << "\tcase " << dec << int(cycle++) << ":";
+		source.push_back(ss1.str());
+		source.push_back("\t{");
+		source.push_back("\t    nextInst();");
+		source.push_back("\t    return;");
+	    }
+	    else if (ci.tag == "nextInst")
+	    {
+		source.push_back("\t    nextInst();");
+		source.push_back("\t    return;");
+	    }
+	    else if (ci.tag == "nextTrace")
+	    {
+		source.push_back("\t    nextTrace();");
+		source.push_back("\t    return;");
+	    }
+	    else if (ci.tag == "setCond")
+	    {
+		stringstream ss;
+		ss << "\t    reg_t = " << ci.args.at(0) << ";";
+		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "label")
+	    {
+		stringstream ss;
+		ss << "\t" << ci.args.at(0) << ":";
+		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "goto")
+	    {
+		stringstream ss;
+		ss << "\tgoto " << ci.args.at(0) << ";";
+		source.push_back(ss.str());
+	    }
+	    else if (ci.tag == "cgoto")
+ 	    {
+		if (ci.args.size() == 2)
+		{
+		    source.push_back("\t    if (reg_t)");
+		    source.push_back("\t    {");
+		    stringstream ss0;
+		    ss0 << "\t\tgoto " << ci.args.at(1) << ";";
+		    source.push_back(ss0.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else");
+		    source.push_back("\t    {");
+		    stringstream ss1;
+		    ss1 << "\t\tgoto " << ci.args.at(0) << ";";
+		    source.push_back(ss1.str());
+		    source.push_back("\t    }");
+		}
+		else if (ci.args.size() == 3)
+		{
+		    source.push_back("\t    if (reg_t == 0)");
+		    source.push_back("\t    {");
+		    stringstream ss0;
+		    ss0 << "\t\tgoto " << ci.args.at(0) << ";";
+		    source.push_back(ss0.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else if (reg_t == 1)");
+		    source.push_back("\t    {");
+		    stringstream ss1;
+		    ss1 << "\t\tgoto " << ci.args.at(1) << ";";
+		    source.push_back(ss1.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else");
+		    source.push_back("\t    {");
+		    stringstream ss2;
+		    ss2 << "\t\tgoto " << ci.args.at(2) << ";";
+		    source.push_back(ss2.str());
+		    source.push_back("\t    }");
+		}
+		else if (ci.args.size() == 4)
+		{
+		    source.push_back("\t    if (reg_t == 0)");
+		    source.push_back("\t    {");
+		    stringstream ss0;
+		    ss0 << "\t\tgoto " << ci.args.at(0) << ";";
+		    source.push_back(ss0.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else if (reg_t == 1)");
+		    source.push_back("\t    {");
+		    stringstream ss1;
+		    ss1 << "\t\tgoto " << ci.args.at(1) << ";";
+		    source.push_back(ss1.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else if (reg_t == 2)");
+		    source.push_back("\t    {");
+		    stringstream ss2;
+		    ss2 << "\t\tgoto " << ci.args.at(2) << ";";
+		    source.push_back(ss2.str());
+		    source.push_back("\t    }");
+		    source.push_back("\t    else");
+		    source.push_back("\t    {");
+		    stringstream ss3;
+		    ss3 << "\t\tgoto " << ci.args.at(3) << ";";
+		    source.push_back(ss3.str());
+		    source.push_back("\t     }");
+		}
+	    }
 	    else
 	    {
-		cout << "Unimplemented tag of " << ci.tag << endl;
+		cout << "Unrecognized tag of " << ci.tag << endl;
 		throw runtime_error("Codegen error");
 	    }
 	}
-
-	num_states += 1;
     }
 
     source.push_back("\t}");
     source.push_back("\tbreak;");
-
     source.push_back("\tdefault:");
     source.push_back("\t{");
     source.push_back("\t    unrecognizedState();");
     source.push_back("\t}");
     source.push_back("\tbreak;");
-
     source.push_back("    }");
 
     return source;
@@ -4461,20 +4531,21 @@ struct KujoState
     string state_name;
     int tvn_val = 0;
     bool is_critical = false;
+    bool is_implemented = false;
 };
 
 vector<KujoState> states = 
 {
-    {0x002, "reset", 0, true},
-    {0x003, "busError", 2, true},
-    {0x003, "addressError", 3, true},
-    {0x001, "doubleFault", -1, false},
-    {0x1C4, "interrupt", 1, false},
-    {0x1C0, "trace", 9, false},
-    {0x1C0, "illegal", 4, false},
-    {0x1C0, "privilege", 8, false},
-    {0x1C0, "lineA", 10, false},
-    {0x1C0, "lineF", 11, false}
+    {0x002, "reset", 0, true, true},
+    {0x003, "busError", 2, true, false},
+    {0x003, "addressError", 3, true, false},
+    {0x001, "doubleFault", -1, false, true},
+    {0x1C4, "interrupt", 1, false, true},
+    {0x1C0, "trace", 9, false, false},
+    {0x1C0, "illegal", 4, false, false},
+    {0x1C0, "privilege", 8, false, false},
+    {0x1C0, "lineA", 10, false, false},
+    {0x1C0, "lineF", 11, false, false}
 };
 
 bool generateCodeForState(ostream &str, string val)
@@ -4579,13 +4650,23 @@ string getInstructionName(vector<string> ii)
     return ss.str();
 }
 
-void generateStateFunction(ostream &file, string func_name, string state_name)
+string getStateFunctionName(string func_name)
 {
     stringstream func_ss;
     func_name.at(0) = toupper(func_name.at(0));
     func_ss << func_name << "Dp";
+    return func_ss.str();
+}
+
+string getStateFunctionName(M68KHandler handler)
+{
+    return getStateFunctionName(handler.handler_name);
+}
+
+void generateStateFunction(ostream &file, string func_name, string state_name)
+{
     stringstream ss;
-    generateFunctionStart(ss, func_ss.str());
+    generateFunctionStart(ss, getStateFunctionName(func_name));
     if (!generateCodeForState(ss, state_name))
     {
 	generateCodeForState(ss, "doubleFault");
@@ -4615,8 +4696,6 @@ vector<M68KHandler> handlers;
 
 void generateInstHandlers(ofstream &file)
 {
-    file << "#define getCycle(state, cycle)    (((cycle) << 6) | (state))\n\n";
-
     generateStateFunction(file, "reset", "reset");
     generateStateFunction(file, "doubleFault", "doubleFault");
     generateStateFunction(file, "interrupt", "interrupt");
@@ -4625,6 +4704,28 @@ void generateInstHandlers(ofstream &file)
     {
 	generateInstFunction(file, handler);
     }
+
+    file << endl;
+    file << "vector<progfunc> handlers = {\n";
+
+    for (auto &state : states)
+    {
+	if (state.is_implemented)
+	{
+	    file << "    getFunction(" << getStateFunctionName(state.state_name) << ")," << endl;
+	}
+	else
+	{
+	    file << "    getFunction(DoubleFaultDp)," << endl;
+	}
+    }
+
+    for (auto &handler : handlers)
+    {
+	file << "    getFunction(" << handler.handler_name << ")," << endl;
+    }
+
+    file << "};";
 }
 
 bool fetchIRDecode()
@@ -4679,11 +4780,6 @@ bool fetchIRDecode()
 
 bool runHandlers()
 {
-    if (!fetchIRDecode())
-    {
-	return false;
-    }
-
     ofstream file("programs.inl", ios::out | ios::trunc);
 
     generateMicrocode();
@@ -4723,11 +4819,15 @@ bool runHandlers()
     */
 
     // stringstream ss;
-    // generateCodeForState(ss, "interrupt");
+    // generateCodeForState(ss, "reset");
     // cout << ss.str();
     
     // stringstream ss;
-    // generateCodeFromInstruction(ss, 0xC1C0, 0xF1F8);
+    // generateCodeFromInstruction(ss, 0x51C8, 0xFFF8);
+    // cout << ss.str();
+
+    // stringstream ss;
+    // generateCodeFromInstruction(ss, 0x4E72, 0xFFFF);
     // cout << ss.str();
 
     // generateCodeFromInstruction(0x46FC, 0xFFFF);
@@ -4738,8 +4838,13 @@ bool runHandlers()
     return true;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (!fetchIRDecode())
+    {
+	return 1;
+    }
+
     if (!runHandlers())
     {
 	return 1;

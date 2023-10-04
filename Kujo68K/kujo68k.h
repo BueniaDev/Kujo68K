@@ -17,13 +17,13 @@ using namespace std::placeholders;
 
 namespace kujo68k
 {
-    enum Kujo68KState : int
+    enum : int
     {
-	None = 0,
-	Reset = 1,
-	DoubleFault = 4,
-	Interrupt = 5,
-	Trace = 6,
+	SReset = 0,
+	SDoubleFault = 3,
+	SInterrupt = 4,
+	STrace = 5,
+	SIllegal = 6
     };
 
     enum Kujo68KALUOp
@@ -98,13 +98,7 @@ namespace kujo68k
     {
 	uint16_t val = 0;
 	uint16_t mask = 0;
-	progfunc func;
-    };
-
-    struct Kujo68KInstruction
-    {
-	progfunc func;
-	bool is_illegal = true;
+	uint16_t state = 0;
     };
 
     struct Kujo68KPins
@@ -235,9 +229,12 @@ namespace kujo68k
 	    void reset();
 	    void tickInternal();
 
+	    #include "decode.inl"
 	    #include "program_funcs.inl"
 	    #include "programs.inl"
-	    #include "ir_decode.inl"
+
+	    bool prev_clk = false;
+	    bool prev_res = false;
 
 	    bool is_reset = false;
 
@@ -254,8 +251,8 @@ namespace kujo68k
 
 	    int e_counter = 0;
 
-	    int inst_cycle = 0;
-	    int inst_state = 0;
+	    uint16_t inst_cycle = 0;
+	    uint16_t inst_state = 0;
 
 	    BusState bus_state = Idle;
 	    BusState next_bus_state = Idle;
@@ -337,26 +334,11 @@ namespace kujo68k
 
 	    uint32_t base_ssw = 0;
 
-	    vector<Kujo68KInstruction> decode_table;
-
-	    progfunc instr_decode;
-
-	    progfunc getStateFunc(uint32_t state)
-	    {
-		Kujo68KState valid_state = static_cast<Kujo68KState>((state & 0xFFFF));
-
-		switch (valid_state)
-		{
-		    case Reset: return getFunction(ResetDp); break;
-		    case DoubleFault: return getFunction(DoubleFaultDp); break;
-		    case Interrupt: return getFunction(InterruptDp); break;
-		    default: return getFunction(DoubleFaultDp); break;
-		}
-	    }
+	    vector<uint16_t> decode_table;
 
 	    void callFunc()
 	    {
-		instr_decode();
+		handlers.at(inst_state)();
 	    }
 
 	    void unrecognizedState()

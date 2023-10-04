@@ -5,22 +5,21 @@ namespace kujo68k
 {
     Kujo68K::Kujo68K()
     {
-	decode_table.resize(0x10000, {getFunction(DoubleFaultDp), true});
+	decode_table.resize(0x10000, SIllegal);
 
 	for (int i = 0; (ir_decode_table.at(i).mask != 0); i++)
 	{
 	    uint16_t value = ir_decode_table.at(i).val;
 	    uint16_t mask = ir_decode_table.at(i).mask;
-	    auto func = ir_decode_table.at(i).func;
+	    uint16_t state = ir_decode_table.at(i).state;
 
 	    uint16_t cvalue = 0;
 
 	    do
 	    {
-		if (decode_table.at(value | cvalue).is_illegal)
+		if (decode_table.at(value | cvalue) == SIllegal)
 		{
-		    decode_table.at(value | cvalue).func = func;
-		    decode_table.at(value | cvalue).is_illegal = false;
+		    decode_table.at(value | cvalue) = state;
 		}
 		else if (((value | cvalue) & 0xF0FF) != 0x6000)
 		{
@@ -55,7 +54,7 @@ namespace kujo68k
 
     void Kujo68K::reset()
     {
-	inst_state = 0;
+	inst_state = SReset;
 	inst_cycle = 0;
 	reg_inl = 7;
 	is_reset = true;
@@ -63,22 +62,14 @@ namespace kujo68k
 
     void Kujo68K::tickCLK(bool clk)
     {
-	static bool prev_clk = false;
-	static bool prev_res = false;
 	clk_rise = (!prev_clk && clk);
 	clk_fall = (prev_clk && !clk);
 
-	if (!current_pins.pin_nres)
+	if (!prev_res && current_pins.pin_nres)
 	{
 	    reset();
 	}
-	else if (!prev_res && current_pins.pin_nres)
-	{
-	    is_reset = false;
-	    instr_decode = getFunction(ResetDp);
-	    // instr_decode = getFunction(Test);
-	}
-	else if (prev_clk != clk)
+	else
 	{
 	    tickInternal();
 	}
