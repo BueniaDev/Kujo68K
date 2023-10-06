@@ -19,9 +19,7 @@ And more to come!
 
 ## Near-term
 
-Finish implementing M68000 instruction set
-
-Finish up exception support (interrupts already implemented)
+Finish up exception support (only address error and bus error unimplemented)
 
 ## Medium-term
 
