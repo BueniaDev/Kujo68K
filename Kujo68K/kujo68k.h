@@ -23,7 +23,10 @@ namespace kujo68k
 	SDoubleFault = 3,
 	SInterrupt = 4,
 	STrace = 5,
-	SIllegal = 6
+	SIllegal = 6,
+	SPrivilege = 7,
+	SLineA = 8,
+	SLineF = 9
     };
 
     enum Kujo68KALUOp
@@ -90,6 +93,15 @@ namespace kujo68k
 	CcrNZVCU,
 	CcrXNZVC,
 	CcrXNZVCU
+    };
+
+    enum : int
+    {
+	SrCarry = (1 << 0),
+	SrOverflow = (1 << 1),
+	SrZero = (1 << 2),
+	SrSign = (1 << 3),
+	SrExtend = (1 << 4)
     };
 
     using progfunc = function<void()>;

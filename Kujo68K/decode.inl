@@ -1526,5 +1526,7 @@ const vector<Kujo68KDecode> ir_decode_table = {
     {0xe7f0, 0xfff8, 1532},
     {0xe7f8, 0xffff, 1533},
     {0xe7f9, 0xffff, 1534},
+    {0xa000, 0xf000, SLineA},
+    {0xf000, 0xf000, SLineF},
     { }
 };

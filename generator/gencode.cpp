@@ -566,7 +566,7 @@ IrDecoded decodeIR(uint16_t ir)
 	    case 0:
 	    case 1: decoded.macro_tvn = 6; break;
 	    case 3: decoded.macro_tvn = 7; break;
-	    case 2: decoded.macro_tvn = (0b100000 | getBits(ir, 0, 4)); break;
+	    case 2: decoded.macro_tvn = 1; break;
 	}
     }
     else
@@ -635,6 +635,17 @@ IrDecoded decodeIR(uint16_t ir)
 	}
 	break;
 	case 0xB:
+	{
+	    if (testbit(ir, 8) && !size_11 && !ea_a_dir)
+	    {
+		decoded.alu_row = 13;
+	    }
+	    else
+	    {
+		decoded.alu_row = 6;
+	    }
+	}
+	break;
 	case 0xC:
 	{
 	    if (size_11)
@@ -1841,7 +1852,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	alu_info |= aluinfo::is_mul;
     }
 
-    if (ir_dec.alu_row == 8)
+    if (ir_dec.alu_row == 1)
     {
 	alu_info |= aluinfo::is_div;
     }
@@ -1875,6 +1886,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     {
 	alu_info |= aluinfo::arx;
     }
+
 
     int alu_op_offs = ((ir_dec.alu_row * 8) + nano_dec.alu_column);
     int alu_op = alu_ops.at(alu_op_offs);
@@ -2281,18 +2293,15 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if ((cond == cbc::d4) || (cond == cbc::d4i))
     {
-	cout << "Condition of d4/d4i" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"testbit(reg_dcr, 4) ? 1 : 0"}});
     }
     else if (cond == cbc::nv)
     {
-	cout << "Condition of nv" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"((reg_isr & (SrOverflow | SrSign)) == 0) ? 1 : 0"}});
     }
     else if ((cond == cbc::n) || (cond == cbc::ni))
     {
-	cout << "Condition of n/ni" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & SrSign) ? 1 : 0"}});
     }
     else if ((cond == cbc::auz) || (cond == cbc::auzi))
     {
@@ -2300,8 +2309,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if (cond == cbc::v)
     {
-	cout << "Condition of v" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & SrOverflow) ? 1 : 0"}});
     }
     else if ((cond == cbc::cc) || (cond == cbc::cci))
     {
@@ -2319,14 +2327,74 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 		code.push_back({"setCond", {"0"}});
 	    }
 	    break;
+	    case 0x2:
+	    {
+		code.push_back({"setCond", {"((reg_sr & (SrCarry | SrZero)) == 0) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0x3:
+	    {
+		code.push_back({"setCond", {"((reg_sr & (SrCarry | SrZero)) != 0) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0x4:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrCarry) ? 0 : 1"}});
+	    }
+	    break;
+	    case 0x5:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrCarry) ? 1 : 0"}});
+	    }
+	    break;
 	    case 0x6:
 	    {
-		code.push_back({"setCond", {"testbit(reg_sr, 2) ? 0 : 1"}});
+		code.push_back({"setCond", {"(reg_sr & SrZero) ? 0 : 1"}});
 	    }
 	    break;
 	    case 0x7:
 	    {
-		code.push_back({"setCond", {"testbit(reg_sr, 2) ? 1 : 0"}});
+		code.push_back({"setCond", {"(reg_sr & SrZero) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0x8:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrOverflow) ? 0 : 1"}});
+	    }
+	    break;
+	    case 0x9:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrOverflow) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0xA:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrSign) ? 0 : 1"}});
+	    }
+	    break;
+	    case 0xB:
+	    {
+		code.push_back({"setCond", {"(reg_sr & SrSign) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0xC:
+	    {
+		code.push_back({"setCond", {"(((reg_sr & (SrSign | SrOverflow)) == (SrSign | SrOverflow)) || ((reg_sr & (SrSign | SrOverflow)) == 0)) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0xD:
+	    {
+		code.push_back({"setCond", {"(((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0xE:
+	    {
+		code.push_back({"setCond", {"(((reg_sr & (SrSign | SrOverflow | SrZero)) == (SrSign | SrOverflow)) || ((reg_sr & (SrSign | SrOverflow | SrZero)) == 0)) ? 1 : 0"}});
+	    }
+	    break;
+	    case 0xF:
+	    {
+		code.push_back({"setCond", {"(((reg_sr & SrZero) != 0) || ((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0"}});
 	    }
 	    break;
 	    default:
@@ -2339,32 +2407,27 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     }
     else if ((cond == cbc::z) || (cond == cbc::ze))
     {
-	code.push_back({"setCond", {"testbit(reg_isr, 2)"}});
+	code.push_back({"setCond", {"(reg_isr & SrZero) ? 1 : 0"}});
     }
     else if ((cond == cbc::c) || (cond == cbc::ci))
     {
-	cout << "Condition of c/ci" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & SrCarry) ? 1 : 0"}});
     }
     else if ((cond == cbc::n) || (cond == cbc::ni))
     {
-	cout << "Condition of n/ni" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & SrSign) ? 1 : 0"}});
     }
     else if (cond == cbc::nz1)
     {
-	cout << "Condition of nz1" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & SrZero) ? 2 : (reg_isr & SrSign) ? 1 : 0"}});
     }
     else if (cond == cbc::nz2)
     {
-	cout << "Condition of nz2" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_isr & (SrZero | SrSign)) ? 1 : 0"}});
     }
     else if ((cond == cbc::enl) || (cond == cbc::enli))
     {
-	cout << "Condition of enl/enli" << endl;
-	throw runtime_error("Codegen error");
+	code.push_back({"setCond", {"(reg_movemr == 0)"}});
     }
     else if (cond == cbc::ms0)
     {
@@ -2445,10 +2508,13 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	{
 	    code.push_back({"trap", {"int-tvn"}});
 	}
+	else if (ir_dec.macro_tvn == 1)
+	{
+	    code.push_back({"trap", {"trap-tvn"}});
+	}
 	else
 	{
-	    cout << "Unimplemented: tvn_2_ftu for tvn = -1" << endl;
-	    throw runtime_error("Codegen error");
+	    code.push_back({"trap", {getInt(ir_dec.macro_tvn)}});
 	}
     }
 
@@ -2869,8 +2935,14 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	}
 	else
 	{
-	    cout << "Unimplemented: macro tvn" << endl;
-	    throw runtime_error("Codegen error");
+	    if (ir_dec.macro_tvn == 1)
+	    {
+		code_to_sort.push_back({"set", {getInt(ftu), "trap-tvn"}});
+	    }
+	    else
+	    {
+		code_to_sort.push_back({"set", {getInt(ftu), "ct", getInt(ir_dec.macro_tvn << 2)}});
+	    }
 	}
     }
 
@@ -3370,7 +3442,6 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 	    ci.args.push_back(getBool(critical));
 	    ci.args.push_back(sr_update);
 
-	    // TODO: Figure out the correct value to use here
 	    cycle += 1;
 	}
 	else if (ci.tag == "dropCritical")
@@ -3557,8 +3628,7 @@ string makeExpression(string arg)
     }
     else if (arg == "trap-tvn")
     {
-	cout << "trap-tvn" << endl;
-	throw runtime_error("Codegen error");
+	return "0x80 | ((reg_ird & 0xF) << 2)";
     }
     else if (arg == "int-tvn")
     {
@@ -3744,7 +3814,7 @@ array<string, 2> getALUName(string alu_op, string alu_mask, string alu_info)
     int op = toInt(alu_op);
 
     stringstream alu_ss;
-    alu_ss << "Alu" << alu_opnames.at(op);
+    alu_ss << alu_opnames.at(op);
 
     int info = toInt(alu_info);
 
@@ -3986,7 +4056,7 @@ vector<string> generateCode(kujocode code)
 		if (ci.args.size() == 4)
 		{
 		    stringstream ss;
-		    ss << "\t    runALU(" << names.at(0) << ", " << makeExpression(ci.args.at(3)) << ");";
+		    ss << "\t    alu" << names.at(0) << "(" << makeExpression(ci.args.at(3)) << ");";
 		    source.push_back(ss.str());
 		}
 		else
@@ -3999,14 +4069,14 @@ vector<string> generateCode(kujocode code)
 		    }
 
 		    stringstream ss;
-		    ss << "\t    runALU(" << names.at(0) << ", " << makeExpression(ci.args.at(3)) << ", " << expr << ");";
+		    ss << "\t    alu" << names.at(0) << "(" << makeExpression(ci.args.at(3)) << ", " << expr << ");";
 		    source.push_back(ss.str());
 		}
 
 		if (names.at(1) != "")
 		{
 		    stringstream ss2;
-		    ss2 << "\t    updateCCR(Ccr" << names.at(1) << ");";
+		    ss2 << "\t    update" << names.at(1) << "();";
 		    source.push_back(ss2.str());
 		}
 	    }
@@ -4272,7 +4342,7 @@ vector<string> generateCode(kujocode code)
 	    else if (ci.tag == "goto")
 	    {
 		stringstream ss;
-		ss << "\tgoto " << ci.args.at(0) << ";";
+		ss << "\t    goto " << ci.args.at(0) << ";";
 		source.push_back(ss.str());
 	    }
 	    else if (ci.tag == "cgoto")
@@ -4699,6 +4769,11 @@ void generateInstHandlers(ofstream &file)
     generateStateFunction(file, "reset", "reset");
     generateStateFunction(file, "doubleFault", "doubleFault");
     generateStateFunction(file, "interrupt", "interrupt");
+    generateStateFunction(file, "illegal", "illegal");
+    generateStateFunction(file, "trace", "trace");
+    generateStateFunction(file, "privilege", "privilege");
+    generateStateFunction(file, "lineA", "lineA");
+    generateStateFunction(file, "lineF", "lineF");
 
     for (auto &handler : handlers)
     {
@@ -4787,7 +4862,7 @@ bool runHandlers()
     generateInstHandlers(file);
 
     /*
-    auto code = {genBaseCode(0x00A8, 0xFFF8, 0x1C6, -1, false)};
+    auto code = {genBaseCode(0xE050, 0xF1F8, 0x2D3, -1, false)};
 
     cout << "Code: " << endl;
 
@@ -4823,7 +4898,7 @@ bool runHandlers()
     // cout << ss.str();
     
     // stringstream ss;
-    // generateCodeFromInstruction(ss, 0x51C8, 0xFFF8);
+    // generateCodeFromInstruction(ss, 0xB180, 0xF1F8);
     // cout << ss.str();
 
     // stringstream ss;
