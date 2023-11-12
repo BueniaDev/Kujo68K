@@ -20,6 +20,8 @@ namespace kujo68k
     enum : int
     {
 	SReset = 0,
+	SBusError = 1,
+	SAddrError = 2,
 	SDoubleFault = 3,
 	SInterrupt = 4,
 	STrace = 5,
@@ -344,7 +346,8 @@ namespace kujo68k
 	    bool is_iac = false;
 	    bool is_intpend = false;
 
-	    uint32_t base_ssw = 0;
+	    uint16_t reg_ssw = 0;
+	    uint16_t base_ssw = 0;
 
 	    vector<uint16_t> decode_table;
 

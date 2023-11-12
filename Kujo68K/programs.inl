@@ -172,6 +172,462 @@ void m68kResetDpProgram()
     }
 }
 
+void m68kBusErrorDpProgram()
+{
+    switch (inst_cycle)
+    {
+	case 0:
+	{
+	    // 3 bser1
+	    reg_ssw = (base_ssw | (testbit(reg_sr, 13) ? 0x4 : 0));
+	    reg_at = reg_aob;
+	    reg_ftu = reg_sr;
+	    reg_au = reg_pc;
+	    inst_cycle = 1;
+	}
+	break;
+	case 1:
+	{
+	    inst_cycle = 2;
+	}
+	break;
+	case 2:
+	{
+	    // 3a7 bser2
+	    initST();
+	    reg_pc = reg_au;
+	    aluAnd(reg_au, 0xFFFF);
+	    reg_au = reg_da[16] - 2;
+	    inst_cycle = 3;
+	}
+	break;
+	case 3:
+	{
+	    inst_cycle = 4;
+	}
+	break;
+	case 4:
+	{
+	    clearTrace();
+	    // 3ca bser3
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 5;
+	}
+	break;
+	case 5:
+	{
+	    checkExcept();
+	    // a2 bser4
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_ftu = reg_ird;
+	    reg_au = reg_au + 2;
+	    aluAnd(high16(reg_pc), 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 6;
+	}
+	break;
+	case 6:
+	{
+	    checkExcept();
+	    // 3c6 bser5
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 7;
+	}
+	break;
+	case 7:
+	{
+	    checkExcept();
+	    // 88 bser6
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_aluo;
+	    reg_pc = reg_at;
+	    reg_ftu = ((reg_ftu & ~0x1F) | reg_ssw);
+	    reg_au = reg_au - 2;
+	    aluAnd(reg_at, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 8;
+	}
+	break;
+	case 8:
+	{
+	    checkExcept();
+	    // 3c2 trap3
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 9;
+	}
+	break;
+	case 9:
+	{
+	    checkExcept();
+	    // 360 trap4
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    trapExcept(0x02);
+	    reg_da[16] = reg_au;
+	    reg_ftu = 0x0008;
+	    reg_au = reg_au + 2;
+	    aluAnd(high16(reg_pc), 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 10;
+	}
+	break;
+	case 10:
+	{
+	    checkExcept();
+	    // ef trap5
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_at = ext32(reg_ftu);
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_alub, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 11;
+	}
+	break;
+	case 11:
+	{
+	    checkExcept();
+	    // 367 trap6
+	    reg_aob = reg_at;
+	    reg_pc = reg_at;
+	    reg_au = reg_at + 2;
+	    setFC(true, false, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 12;
+	}
+	break;
+	case 12:
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 11a trap7
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 13;
+	}
+	break;
+	case 13:
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 2b7 trap8
+	    reg_aob = merge32(high16(reg_at), reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin) + 2;
+	    setFC(false, true, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 14;
+	}
+	break;
+	case 14:
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 11c trap9
+	    inst_cycle = 15;
+	}
+	break;
+	case 15:
+	{
+	    inst_cycle = 16;
+	}
+	break;
+	case 16:
+	{
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, true);
+	    readWord();
+	    inst_cycle = 17;
+	}
+	break;
+	case 17:
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	    return;
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
+}
+
+void m68kAddressErrorDpProgram()
+{
+    switch (inst_cycle)
+    {
+	case 0:
+	{
+	    // 3 bser1
+	    reg_ssw = (base_ssw | (testbit(reg_sr, 13) ? 0x4 : 0));
+	    reg_at = reg_aob;
+	    reg_ftu = reg_sr;
+	    reg_au = reg_pc;
+	    inst_cycle = 1;
+	}
+	break;
+	case 1:
+	{
+	    inst_cycle = 2;
+	}
+	break;
+	case 2:
+	{
+	    // 3a7 bser2
+	    initST();
+	    reg_pc = reg_au;
+	    aluAnd(reg_au, 0xFFFF);
+	    reg_au = reg_da[16] - 2;
+	    inst_cycle = 3;
+	}
+	break;
+	case 3:
+	{
+	    inst_cycle = 4;
+	}
+	break;
+	case 4:
+	{
+	    clearTrace();
+	    // 3ca bser3
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 5;
+	}
+	break;
+	case 5:
+	{
+	    checkExcept();
+	    // a2 bser4
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_ftu = reg_ird;
+	    reg_au = reg_au + 2;
+	    aluAnd(high16(reg_pc), 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 6;
+	}
+	break;
+	case 6:
+	{
+	    checkExcept();
+	    // 3c6 bser5
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 7;
+	}
+	break;
+	case 7:
+	{
+	    checkExcept();
+	    // 88 bser6
+	    reg_aob = reg_au;
+	    reg_ird = reg_ir;
+	    setIntState();
+	    reg_dbout = reg_aluo;
+	    reg_pc = reg_at;
+	    reg_ftu = ((reg_ftu & ~0x1F) | reg_ssw);
+	    reg_au = reg_au - 2;
+	    aluAnd(reg_at, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 8;
+	}
+	break;
+	case 8:
+	{
+	    checkExcept();
+	    // 3c2 trap3
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_ftu, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 9;
+	}
+	break;
+	case 9:
+	{
+	    checkExcept();
+	    // 360 trap4
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    trapExcept(0x03);
+	    reg_da[16] = reg_au;
+	    reg_ftu = 0x000c;
+	    reg_au = reg_au + 2;
+	    aluAnd(high16(reg_pc), 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 10;
+	}
+	break;
+	case 10:
+	{
+	    checkExcept();
+	    // ef trap5
+	    reg_aob = reg_au;
+	    reg_dbout = reg_aluo;
+	    reg_at = ext32(reg_ftu);
+	    reg_au = reg_au - 4;
+	    aluAnd(reg_alub, 0xFFFF);
+	    setFC(true, false, false, true);
+	    setCritical();
+	    writeWord();
+	    inst_cycle = 11;
+	}
+	break;
+	case 11:
+	{
+	    checkExcept();
+	    // 367 trap6
+	    reg_aob = reg_at;
+	    reg_pc = reg_at;
+	    reg_au = reg_at + 2;
+	    setFC(true, false, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 12;
+	}
+	break;
+	case 12:
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 11a trap7
+	    reg_aob = reg_au;
+	    setReg16High(reg_at, reg_dbin);
+	    reg_au = reg_au + 2;
+	    setFC(true, false, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 13;
+	}
+	break;
+	case 13:
+	{
+	    checkExcept();
+	    reg_dbin = reg_edb;
+	    // 2b7 trap8
+	    reg_aob = merge32(high16(reg_at), reg_dbin);
+	    reg_au = merge32(high16(reg_at), reg_dbin) + 2;
+	    setFC(false, true, true, true);
+	    setCritical();
+	    readWord();
+	    inst_cycle = 14;
+	}
+	break;
+	case 14:
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    // 11c trap9
+	    inst_cycle = 15;
+	}
+	break;
+	case 15:
+	{
+	    inst_cycle = 16;
+	}
+	break;
+	case 16:
+	{
+	    // 363 b
+	    reg_aob = reg_au;
+	    reg_ir = reg_irc;
+	    updateIPL();
+	    reg_pc = reg_au;
+	    reg_au = reg_au + 2;
+	    // 34c mmrw3
+	    reg_ird = reg_ir;
+	    setIntState();
+	    setFC(false, true, true, true);
+	    readWord();
+	    inst_cycle = 17;
+	}
+	break;
+	case 17:
+	{
+	    checkExcept();
+	    reg_irc = reg_edb;
+	    reg_dbin = reg_edb;
+	    setFTUConst();
+	    nextTrace();
+	    return;
+	}
+	break;
+	default:
+	{
+	    unrecognizedState();
+	}
+	break;
+    }
+}
+
 void m68kDoubleFaultDpProgram()
 {
     switch (inst_cycle)

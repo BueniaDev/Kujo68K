@@ -3623,8 +3623,7 @@ string makeExpression(string arg)
     }
     else if (arg == "ftu-ssw")
     {
-	cout << "ftu-ssw" << endl;
-	throw runtime_error("Codegen error");
+	return "((reg_ftu & ~0x1F) | reg_ssw)";
     }
     else if (arg == "trap-tvn")
     {
@@ -4411,6 +4410,10 @@ vector<string> generateCode(kujocode code)
 		    source.push_back("\t     }");
 		}
 	    }
+	    else if (ci.tag == "updateSSW")
+	    {
+		source.push_back("\t    reg_ssw = (base_ssw | (testbit(reg_sr, 13) ? 0x4 : 0));");
+	    }
 	    else
 	    {
 		cout << "Unrecognized tag of " << ci.tag << endl;
@@ -4767,6 +4770,8 @@ vector<M68KHandler> handlers;
 void generateInstHandlers(ofstream &file)
 {
     generateStateFunction(file, "reset", "reset");
+    generateStateFunction(file, "busError", "busError");
+    generateStateFunction(file, "addressError", "addressError");
     generateStateFunction(file, "doubleFault", "doubleFault");
     generateStateFunction(file, "interrupt", "interrupt");
     generateStateFunction(file, "illegal", "illegal");
