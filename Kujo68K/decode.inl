@@ -1,6 +1,6 @@
 #define getFunction(func) bind(&Kujo68K::m68k##func##Program, this)
 
-const vector<Kujo68KDecode> ir_decode_table = {
+vector<Kujo68KDecode> ir_decode_table = {
     {0x0000, 0xfff8, 10},
     {0x0010, 0xfff8, 11},
     {0x0018, 0xfff8, 12},

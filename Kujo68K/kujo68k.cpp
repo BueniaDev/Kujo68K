@@ -43,21 +43,21 @@ namespace kujo68k
 	reg_da.fill(0);
 	reg_sr = 0;
 	reg_isr = 0;
-	updateSupervisor();
-    }
-
-    void Kujo68K::tick()
-    {
-	tickCLK(true);
-	tickCLK(false);
     }
 
     void Kujo68K::reset()
     {
+	current_pins.pin_nres = false;
+	tickCLK(true);
+	tickCLK(false);
+	current_pins.pin_nres = true;
+    }
+
+    void Kujo68K::resetInternal()
+    {
 	inst_state = SReset;
 	inst_cycle = 0;
-	reg_inl = 7;
-	is_reset = true;
+	updateSupervisor();
     }
 
     void Kujo68K::tickCLK(bool clk)
@@ -65,9 +65,9 @@ namespace kujo68k
 	clk_rise = (!prev_clk && clk);
 	clk_fall = (prev_clk && !clk);
 
-	if (!prev_res && current_pins.pin_nres)
+	if (!current_pins.pin_nres)
 	{
-	    reset();
+	    resetInternal();
 	}
 	else
 	{
@@ -75,7 +75,28 @@ namespace kujo68k
 	}
 
 	prev_clk = clk;
-	prev_res = current_pins.pin_nres;
+    }
+
+    void Kujo68K::debugOutput()
+    {
+	for (int i = 0; i < 8; i++)
+	{
+	    cout << "D" << dec << int(i) << ": " << hex << int(reg_da.at(i)) << endl;
+	}
+
+	for (int i = 0; i < 7; i++)
+	{
+	    cout << "A" << dec << int(i) << ": " << hex << int(reg_da.at(8 + i)) << endl;
+	}
+
+	cout << "USP: " << hex << int (reg_da.at(15)) << endl;
+	cout << "SP: " << hex << int (reg_da.at(16)) << endl;
+
+	cout << "PC: " << hex << int(reg_pc) << endl;
+	cout << "IRD: " << hex << int(reg_ird) << endl;
+	cout << "IR: " << hex << int(reg_ir) << endl;
+	cout << "IRC: " << hex << int(reg_irc) << endl;
+	cout << endl;
     }
 
     void Kujo68K::tickInternal()

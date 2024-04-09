@@ -2,10 +2,7 @@
 #define KUJO68K_H
 
 #include <iostream>
-#include <iomanip>
-#include <sstream>
 #include <cstdint>
-#include <cassert>
 #include <array>
 #include <vector>
 #include <deque>
@@ -17,104 +14,6 @@ using namespace std::placeholders;
 
 namespace kujo68k
 {
-    enum : int
-    {
-	SReset = 0,
-	SBusError = 1,
-	SAddrError = 2,
-	SDoubleFault = 3,
-	SInterrupt = 4,
-	STrace = 5,
-	SIllegal = 6,
-	SPrivilege = 7,
-	SLineA = 8,
-	SLineF = 9
-    };
-
-    enum Kujo68KALUOp
-    {
-	AluNone = 0,
-	AluAnd,
-	AluAndx,
-	AluAndByte,
-	AluAndBytex,
-	AluOr,
-	AluOrByte,
-	AluXor,
-	AluXorByte,
-	AluAdd,
-	AluAddc,
-	AluAddByte,
-	AluAddx,
-	AluAddxByte,
-	AluSub,
-	AluSubByte,
-	AluSubx,
-	AluSubxByte,
-	AluSubc,
-	AluNot,
-	AluNotByte,
-	AluExt,
-	AluAbcd,
-	AluAbcdByte,
-	AluSbcd,
-	AluSbcdByte,
-	AluLsl,
-	AluLslByte,
-	AluLslLong,
-	AluLsr,
-	AluLsrByte,
-	AluLsrLong,
-	AluAsl,
-	AluAslByte,
-	AluAslLong,
-	AluAsr,
-	AluAsrByte,
-	AluAsrLong,
-	AluRol,
-	AluRolByte,
-	AluRolLong,
-	AluRor,
-	AluRorByte,
-	AluRorLong,
-	AluRoxl,
-	AluRoxlByte,
-	AluRoxlLong,
-	AluRoxr,
-	AluRoxrLong,
-	AluRoxrLongMu,
-	AluRoxrLongMs,
-    };
-
-    enum Kujo68KCCR
-    {
-	CcrNone = 0,
-	CcrZ,
-	CcrNZU,
-	CcrNZVC,
-	CcrNZVCU,
-	CcrXNZVC,
-	CcrXNZVCU
-    };
-
-    enum : int
-    {
-	SrCarry = (1 << 0),
-	SrOverflow = (1 << 1),
-	SrZero = (1 << 2),
-	SrSign = (1 << 3),
-	SrExtend = (1 << 4)
-    };
-
-    using progfunc = function<void()>;
-
-    struct Kujo68KDecode
-    {
-	uint16_t val = 0;
-	uint16_t mask = 0;
-	uint16_t state = 0;
-    };
-
     struct Kujo68KPins
     {
 	bool pin_nres = true;
@@ -139,84 +38,72 @@ namespace kujo68k
 	bool pin_e = false;
     };
 
-    enum DMAPhase
-    {
-	DmaReset = 0,
-	DmaIdle,
-	DmaD1,
-	DmaBr,
-	DmaBa,
-	DmaBra,
-	DmaD3,
-	DmaD2,
-    };
-
-    enum BusState
-    {
-	Idle = 0,
-	S0,
-	S1,
-	S2,
-	S3,
-	S4,
-	S5,
-	S6,
-	S7,
-	RmcRes,
-    };
-
     class Kujo68K
     {
+	enum : int
+	{
+	    SReset = 0,
+	    SBusError = 1,
+	    SAddrError = 2,
+	    SDoubleFault = 3,
+	    SInterrupt = 4,
+	    STrace = 5,
+	    SIllegal = 6,
+	    SPrivilege = 7,
+	    SLineA = 8,
+	    SLineF = 9
+	};
+
+	enum DMAPhase
+	{
+	    DmaReset = 0,
+	    DmaIdle,
+	    DmaD1,
+	    DmaBr,
+	    DmaBa,
+	    DmaBra,
+	    DmaD3,
+	    DmaD2
+	};
+
+	enum BusState
+	{
+	    Idle = 0,
+	    S0,
+	    S2,
+	    S4,
+	    S6,
+	    RmcRes
+	};
+
+	enum : int
+	{
+	    SrCarry = (1 << 0),
+	    SrOverflow = (1 << 1),
+	    SrZero = (1 << 2),
+	    SrSign = (1 << 3),
+	    SrExtend = (1 << 4)
+	};
+
+	struct Kujo68KDecode
+	{
+	    uint16_t val = 0;
+	    uint16_t mask = 0;
+	    uint16_t state = 0;
+	};
+
 	public:
 	    Kujo68K();
 	    ~Kujo68K();
 
 	    void init();
-	    void tick();
+	    void reset();
 	    void tickCLK(bool clk);
+	    void debugOutput();
 
 	    Kujo68KPins &getPins()
 	    {
 		return current_pins;
-	    }
-
-	    uint32_t getPC()
-	    {
-		return reg_pc;
-	    }
-
-	    uint32_t getDataReg(int reg)
-	    {
-		reg &= 0x7;
-		return reg_da.at(reg);
-	    }
-
-	    uint32_t getAddrReg(int reg)
-	    {
-		reg &= 0x7;
-		return reg_da.at(reg + 8);
-	    }
-
-	    void debugOutput()
-	    {
-		for (int i = 0; i < 8; i++)
-		{
-		    cout << "D" << dec << int(i) << ": " << hex << int(getDataReg(i)) << endl;
-		}
-
-		for (int i = 0; i < 7; i++)
-		{
-		    cout << "A" << hex << int(i) << ": " << hex << int(getAddrReg(i)) << endl;
-		}
-
-		cout << "USP: " << hex << int (reg_da.at(15)) << endl;
-		cout << "SP: " << hex << int (reg_da.at(16)) << endl;
-
-		cout << "PC: " << hex << int(reg_pc) << endl;
-		cout << "IRD: " << hex << int(reg_ird) << endl;
-		cout << "IR: " << hex << int(reg_ir) << endl;
-		cout << "IRC: " << hex << int(reg_irc) << endl;
-		cout << endl;
 	    }
 
 	private:
@@ -240,8 +127,10 @@ namespace kujo68k
 
 	    Kujo68KPins current_pins;
 
-	    void reset();
+	    void resetInternal();
 	    void tickInternal();
+
+	    using progfunc = function<void()>;
 
 	    #include "decode.inl"
 	    #include "program_funcs.inl"
@@ -250,30 +139,8 @@ namespace kujo68k
 	    bool prev_clk = false;
 	    bool prev_res = false;
 
-	    bool is_reset = false;
-
-	    bool is_bus_access = false;
-	    bool is_read = false;
-	    bool is_rmc = false;
-	    bool is_word = false;
 	    bool clk_rise = false;
 	    bool clk_fall = false;
-
-	    bool is_cpu_access = false;
-	    bool is_spurious = false;
-	    bool is_autovec = false;
-
-	    int e_counter = 0;
-
-	    uint16_t inst_cycle = 0;
-	    uint16_t inst_state = 0;
-
-	    BusState bus_state = Idle;
-	    BusState next_bus_state = Idle;
-	    DMAPhase dma_phase = DmaReset;
-	    DMAPhase next_dma_phase = DmaReset;
-
-	    bool is_access = false;
 
 	    uint16_t reg_irdi = 0;
 	    uint16_t reg_ird = 0;
@@ -300,75 +167,52 @@ namespace kujo68k
 	    uint16_t reg_new_sr = 0;
 	    uint32_t reg_movems = 0;
 
-	    int sp_index = 0;
-
 	    int rx_index = 0;
 	    int ry_index = 0;
 
 	    int reg_t = 0;
 
+	    uint16_t inst_cycle = 0;
+	    uint16_t inst_state = 0;
+
 	    uint32_t next_state = 0;
 	    uint32_t int_next_state = 0;
 
-	    int reg_ipl = 0;
-	    int m_ipl = 0;
-	    int reg_inl = 0;
-
 	    uint8_t reg_int_vec = 0;
-
-	    bool bei_delay = false;
-	    bool is_bei = false;
-	    bool is_bri = false;
-	    bool is_bgack = false;
-	    bool is_granted = false;
-	    bool is_rberr = false;
-	    bool is_vpai = false;
-
-	    bool bus_available = false;
-	    bool is_bc_reset = false;
-	    bool bg_block = false;
-	    bool bus_can_start = false;
-	    bool bc_complete = false;
-	    bool is_cpu_cycle = false;
-	    bool is_rmc_reg = false;
-
-	    bool can_start = false;
-
-	    bool addr_oe_delay = false;
-	    bool addr_oe = false;
-
-	    bool data_oe = true;
-
-	    bool bc_pend = false;
-
-	    bool prev_nmi = false;
-	    bool is_nmi_occured = false;
-	    bool is_iac = false;
-	    bool is_intpend = false;
 
 	    uint16_t reg_ssw = 0;
 	    uint16_t base_ssw = 0;
 
-	    vector<uint16_t> decode_table;
+	    BusState bus_state = Idle;
+	    BusState next_bus_state = Idle;
 
-	    void callFunc()
-	    {
-		handlers.at(inst_state)();
-	    }
+	    bool is_bus_available = false;
+	    bool is_bus_start = false;
+
+	    bool is_bus_byte = false;
+	    bool is_bus_write = false;
+	    bool is_bus_rmc = false;
+	    bool is_cpu_access = false;
+
+	    bool is_rmc_reg = false;
+
+	    bool is_dtack = false;
+
+	    bool addr_oe = false;
+	    bool data_oe = false;
+
+	    bool bc_complete = false;
+
+	    int e_counter = 0;
+
+	    vector<uint16_t> decode_table;
 
 	    void unrecognizedState()
 	    {
 		cout << "Unrecognized inst state of " << dec << int(inst_state) << ", cycle of " << dec << int(inst_cycle) << endl;
 		throw runtime_error("Kujo68K error");
 	    }
-
-	    void startMemIO()
-	    {
-		is_rmc_reg = (is_rmc && is_read);
-	    }
     };
 };
-
-
 
 #endif // KUJO68K_H
