@@ -14,7 +14,7 @@ using namespace std::placeholders;
 
 namespace kujo68k
 {
-    struct Kujo68KPins
+    struct Kujo68000Pins
     {
 	bool pin_nres = true;
 	uint32_t addr = 0;
@@ -24,7 +24,9 @@ namespace kujo68k
 	bool pin_udsn = true;
 	bool pin_ldsn = true;
 	bool pin_dtack = false;
+	bool pin_e = false;
 	bool pin_vpan = true;
+	bool pin_vman = true;
 	bool pin_ipl0n = true;
 	bool pin_ipl1n = true;
 	bool pin_ipl2n = true;
@@ -33,80 +35,80 @@ namespace kujo68k
 	bool pin_fc2 = false;
 	bool pin_brn = true;
 	bool pin_bgn = true;
-	bool pin_berrn = true;
 	bool pin_bgackn = true;
-	bool pin_e = false;
+	bool pin_berrn = true;
     };
 
-    class Kujo68K
+    class Kujo68KCore
     {
-	enum : int
-	{
-	    SReset = 0,
-	    SBusError = 1,
-	    SAddrError = 2,
-	    SDoubleFault = 3,
-	    SInterrupt = 4,
-	    STrace = 5,
-	    SIllegal = 6,
-	    SPrivilege = 7,
-	    SLineA = 8,
-	    SLineF = 9
-	};
-
-	enum DMAPhase
-	{
-	    DmaReset = 0,
-	    DmaIdle,
-	    DmaD1,
-	    DmaBr,
-	    DmaBa,
-	    DmaBra,
-	    DmaD3,
-	    DmaD2
-	};
-
-	enum BusState
-	{
-	    Idle = 0,
-	    S0,
-	    S2,
-	    S4,
-	    S6,
-	    RmcRes
-	};
-
-	enum : int
-	{
-	    SrCarry = (1 << 0),
-	    SrOverflow = (1 << 1),
-	    SrZero = (1 << 2),
-	    SrSign = (1 << 3),
-	    SrExtend = (1 << 4)
-	};
-
-	struct Kujo68KDecode
-	{
-	    uint16_t val = 0;
-	    uint16_t mask = 0;
-	    uint16_t state = 0;
-	};
-
 	public:
-	    Kujo68K();
-	    ~Kujo68K();
+	    Kujo68KCore();
+	    ~Kujo68KCore();
 
 	    void init();
 	    void reset();
 	    void tickCLK(bool clk);
 	    void debugOutput();
 
-	    Kujo68KPins &getPins()
-	    {
-		return current_pins;
-	    }
+	    virtual void tickInternal();
+	    virtual bool busEnding();
 
-	private:
+	    virtual bool getReset();
+	    virtual void setReset(bool val);
+
+	protected:
+	    enum : int
+	    {
+		SReset = 0,
+		SBusError = 1,
+		SAddrError = 2,
+		SDoubleFault = 3,
+		SInterrupt = 4,
+		STrace = 5,
+		SIllegal = 6,
+		SPrivilege = 7,
+		SLineA = 8,
+		SLineF = 9
+	    };
+
+	    enum DMAPhase
+	    {
+		DmaReset = 0,
+		DmaIdle,
+		DmaD1,
+		DmaBr,
+		DmaBa,
+		DmaBra,
+		DmaD3,
+		DmaD2
+	    };
+
+	    enum BusState
+	    {
+		Idle = 0,
+		S0,
+		S2,
+		S4,
+		S6,
+		RmcRes
+	    };
+
+	    enum : int
+	    {
+		SrCarry = (1 << 0),
+		SrOverflow = (1 << 1),
+		SrZero = (1 << 2),
+		SrSign = (1 << 3),
+		SrExtend = (1 << 4)
+	    };
+
+	    struct Kujo68KDecode
+	    {
+		uint16_t val = 0;
+		uint16_t mask = 0;
+		uint16_t state = 0;
+	    };
+
 	    template<typename T>
 	    bool testbit(T reg, int bit)
 	    {
@@ -125,19 +127,24 @@ namespace kujo68k
 		return (reg & ~(1 << bit));
 	    }
 
-	    Kujo68KPins current_pins;
+	    void initDecodeTable();
+	    void clearDecodeTable();
 
 	    void resetInternal();
-	    void tickInternal();
 
 	    using progfunc = function<void()>;
+
+	    struct Kujo68KHandler
+	    {
+		progfunc func;
+		bool is_first_step = false;
+	    };
 
 	    #include "decode.inl"
 	    #include "program_funcs.inl"
 	    #include "programs.inl"
 
 	    bool prev_clk = false;
-	    bool prev_res = false;
 
 	    bool clk_rise = false;
 	    bool clk_fall = false;
@@ -189,6 +196,14 @@ namespace kujo68k
 	    bool is_bus_available = false;
 	    bool is_bus_start = false;
 
+	    bool is_last_bus_cycle = false;
+	    bool is_next_inst = false;
+
+	    bool is_end_of_bus = false;
+	    bool is_bus_disable = false;
+
+	    bool is_bus_begin = false;
+
 	    bool is_bus_byte = false;
 	    bool is_bus_write = false;
 	    bool is_bus_rmc = false;
@@ -197,11 +212,14 @@ namespace kujo68k
 	    bool is_rmc_reg = false;
 
 	    bool is_dtack = false;
+	    bool is_vpai = false;
+	    bool is_xvma = false;
+	    bool is_stop = false;
 
 	    bool addr_oe = false;
 	    bool data_oe = false;
 
-	    bool bc_complete = false;
+	    bool ext_res = false;
 
 	    int e_counter = 0;
 
@@ -212,6 +230,25 @@ namespace kujo68k
 		cout << "Unrecognized inst state of " << dec << int(inst_state) << ", cycle of " << dec << int(inst_cycle) << endl;
 		throw runtime_error("Kujo68K error");
 	    }
+    };
+
+    class Kujo68000 : public Kujo68KCore
+    {
+	public:
+	    Kujo68000();
+	    ~Kujo68000();
+
+	    void tickInternal();
+	    bool getReset();
+	    void setReset(bool val);
+
+	    Kujo68000Pins &getPins()
+	    {
+		return current_pins;
+	    }
+
+	private:
+	    Kujo68000Pins current_pins;
     };
 };
 

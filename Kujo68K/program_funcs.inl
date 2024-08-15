@@ -13,6 +13,13 @@ void initST()
     updateInterrupts();
 }
 
+void updateSR()
+{
+    reg_sr = reg_new_sr;
+    updateSupervisor();
+    updateInterrupts();
+}
+
 void updateSupervisor()
 {
     if (testbit(reg_sr, 13))
@@ -112,30 +119,21 @@ void setTrace()
 {
     if (testbit(reg_sr, 15))
     {
-	int_next_state = STrace;
+	next_state = STrace;
     }
 }
 
 void clearTrace()
 {
-    if (int_next_state == STrace)
+    if (next_state == STrace)
     {
-	int_next_state = 0;
+	next_state = 0;
     }
 }
 
-void setFC(bool fc0, bool fc1, bool is_r, bool is_n)
+void setFC(bool fc0, bool fc1, bool is_r, bool is_n, bool is_critical)
 {
-    current_pins.pin_fc0 = fc0;
-    current_pins.pin_fc1 = fc1;
-    current_pins.pin_fc2 = testbit(reg_sr, 13);
-
-    base_ssw = (0x20 | (is_n << 4) | (is_r << 3) | (fc1 << 1) | fc0);
-}
-
-void dropCritical()
-{
-    base_ssw = resetbit(base_ssw, 5);
+    base_ssw = ((is_critical << 5) | (is_n << 4) | (is_r << 3) | (fc1 << 1) | fc0);
 }
 
 static void setReg16High(uint32_t &reg, uint16_t value)
@@ -191,10 +189,9 @@ void readRMC()
 
 void readByte()
 {
-    is_bus_byte = true;
-    is_bus_write = false;
-    is_bus_rmc = false;
-    is_cpu_access = false;
+    // TODO: Implement this function
+    cout << "readByte" << endl;
+    throw runtime_error("Kujo68K error");
 }
 
 void readWord()
@@ -221,18 +218,16 @@ void writeRMC()
 
 void writeByte()
 {
-    is_bus_byte = true;
-    is_bus_write = true;
-    is_bus_rmc = false;
-    is_cpu_access = false;
+    // TODO: Implement this function
+    cout << "writeByte" << endl;
+    throw runtime_error("Kujo68K error");
 }
 
 void writeWord()
 {
-    is_bus_byte = false;
-    is_bus_write = true;
-    is_bus_rmc = false;
-    is_cpu_access = false;
+    // TODO: Implement this function
+    cout << "writeWord" << endl;
+    throw runtime_error("Kujo68K error");
 }
 
 void startIRQVectorLookup()
@@ -251,22 +246,23 @@ void endIRQVectorLookup()
 
 void startBus()
 {
-    is_bus_start = true;
     is_rmc_reg = (is_bus_rmc && !is_bus_write);
+    is_bus_start = true;
 }
 
 void endBus()
 {
+    is_bus_byte = false;
+    is_bus_write = false;
+    is_bus_rmc = false;
+    is_cpu_access = false;
+    is_rmc_reg = false;
     is_bus_start = false;
 }
 
-bool readBusStart()
+bool isBusEnd()
 {
-    return (bus_state == S0);
-}
-
-bool readBusEnd()
-{
+    cout << "Current bus state: " << dec << int(bus_state) << endl;
     return (bus_state == S6);
 }
 
@@ -290,20 +286,18 @@ void setPriv()
 void nextInst()
 {
     reg_irdi = reg_ird;
-    inst_state = (next_state != 0) ? next_state : decode_table.at(reg_ird);
+    inst_state = (next_state != 0) ? next_state : decode_table.at(reg_irdi);
     inst_cycle = 0;
+    is_bus_begin = !handlers[inst_state].is_first_step;
 }
 
 void nextTrace()
 {
-    reg_irdi = reg_ird;
-    inst_state = (next_state != 0) ? next_state : decode_table.at(reg_ird);
-    inst_cycle = 0;
+    nextInst();
 
     if (testbit(reg_sr, 15))
     {
-	cout << "Calling trace..." << endl;
-	throw runtime_error("Kujo68K error");
+	next_state = STrace;
     }
 }
 
@@ -314,16 +308,8 @@ bool isAddrError()
 
 void throwAddrError()
 {
-    if (testbit(reg_ssw, 5))
-    {
-	inst_state = SDoubleFault;
-    }
-    else
-    {
-	inst_state = SAddrError;
-    }
-
-    inst_cycle = 0;
+    cout << "Address error occured" << endl;
+    throw runtime_error("Kujo68K error");
 }
 
 int mapSP(int val)

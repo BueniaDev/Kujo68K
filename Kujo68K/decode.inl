@@ -1,4 +1,4 @@
-#define getFunction(func) bind(&Kujo68K::m68k##func##Program, this)
+#define getFunction(func) bind(&Kujo68KCore::m68k##func##Program, this)
 
 vector<Kujo68KDecode> ir_decode_table = {
     {0x0000, 0xfff8, 10},

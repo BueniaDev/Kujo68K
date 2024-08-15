@@ -3,7 +3,17 @@ using namespace std;
 
 namespace kujo68k
 {
-    Kujo68K::Kujo68K()
+    Kujo68KCore::Kujo68KCore()
+    {
+
+    }
+
+    Kujo68KCore::~Kujo68KCore()
+    {
+
+    }
+
+    void Kujo68KCore::initDecodeTable()
     {
 	decode_table.resize(0x10000, SIllegal);
 
@@ -32,52 +42,45 @@ namespace kujo68k
 	}
     }
 
-    Kujo68K::~Kujo68K()
+    void Kujo68KCore::clearDecodeTable()
     {
 	decode_table.clear();
     }
 
-    void Kujo68K::init()
+    void Kujo68KCore::init()
     {
-	current_pins = {};
 	reg_da.fill(0);
 	reg_sr = 0;
 	reg_isr = 0;
     }
 
-    void Kujo68K::reset()
+    void Kujo68KCore::reset()
     {
-	current_pins.pin_nres = false;
+	setReset(false);
 	tickCLK(true);
 	tickCLK(false);
-	current_pins.pin_nres = true;
+	setReset(true);
     }
 
-    void Kujo68K::resetInternal()
+    void Kujo68KCore::resetInternal()
     {
 	inst_state = SReset;
 	inst_cycle = 0;
 	updateSupervisor();
     }
 
-    void Kujo68K::tickCLK(bool clk)
+    void Kujo68KCore::tickCLK(bool clk)
     {
 	clk_rise = (!prev_clk && clk);
 	clk_fall = (prev_clk && !clk);
+	ext_res = !getReset();
 
-	if (!current_pins.pin_nres)
-	{
-	    resetInternal();
-	}
-	else
-	{
-	    tickInternal();
-	}
+	tickInternal();
 
 	prev_clk = clk;
     }
 
-    void Kujo68K::debugOutput()
+    void Kujo68KCore::debugOutput()
     {
 	for (int i = 0; i < 8; i++)
 	{
@@ -91,16 +94,59 @@ namespace kujo68k
 
 	cout << "USP: " << hex << int (reg_da.at(15)) << endl;
 	cout << "SP: " << hex << int (reg_da.at(16)) << endl;
-
 	cout << "PC: " << hex << int(reg_pc) << endl;
 	cout << "IRD: " << hex << int(reg_ird) << endl;
 	cout << "IR: " << hex << int(reg_ir) << endl;
 	cout << "IRC: " << hex << int(reg_irc) << endl;
+	cout << "Bus state: " << dec << int(bus_state) << endl;
+	cout << "Next bus state: " << dec << int(next_bus_state) << endl;
+	cout << "Inst state: " << dec << int(inst_state) << endl;
+	cout << "Inst cycle: " << dec << int(inst_cycle) << endl;
 	cout << endl;
     }
 
-    void Kujo68K::tickInternal()
+    void Kujo68KCore::tickInternal()
     {
-	#include "tick.inl"
+	return;
+    }
+
+    bool Kujo68KCore::busEnding()
+    {
+	return true;
+    }
+
+    bool Kujo68KCore::getReset()
+    {
+	return true;
+    }
+
+    void Kujo68KCore::setReset(bool)
+    {
+	return;
+    }
+
+    Kujo68000::Kujo68000()
+    {
+	initDecodeTable();
+    }
+
+    Kujo68000::~Kujo68000()
+    {
+	clearDecodeTable();
+    }
+
+    bool Kujo68000::getReset()
+    {
+	return current_pins.pin_nres;
+    }
+
+    void Kujo68000::setReset(bool val)
+    {
+	current_pins.pin_nres = val;
+    }
+
+    void Kujo68000::tickInternal()
+    {
+	#include "tick68000.inl"
     }
 };
