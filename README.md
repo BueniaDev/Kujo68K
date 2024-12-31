@@ -38,7 +38,7 @@ Kujo68K is free software: you can redistribute it and/or modify it under the ter
 
 # Copyright
 
-(C) 2024 BueniaDev. This project is not affiliated in any way with NXP or Motorola. Motorola 68000 is a registered trademark of NXP Semiconductors N.V.
+(C) 2025 BueniaDev. This project is not affiliated in any way with NXP or Motorola. Motorola 68000 is a registered trademark of NXP Semiconductors N.V.
 
 All copyrighted material in this repository belongs to their respective owners, and is used under the terms of the "fair use" clause of U.S. and international copyright law. For more information, see the "res/fairuse.txt" file in this repository.
 
