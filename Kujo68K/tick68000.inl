@@ -1,6 +1,7 @@
 if (ext_res)
 {
     Kujo68KCore::resetInternal();
+    is_dtack = false;
 }
 else if (clk_fall)
 {
@@ -126,7 +127,11 @@ bool is_next_inst = is_bus_begin;
 bool can_start = (is_bus_available && (is_next_inst || is_bus_start) && !is_bus_retry && !is_bus_reset);
 bool is_bus_end = (!is_dtack || is_stop);
 
-if (clk_fall)
+if (ext_res)
+{
+    bus_state = Idle;
+}
+else if (clk_fall)
 {
     bus_state = next_bus_state;
     is_bus_begin = false;
@@ -138,7 +143,6 @@ switch (bus_state)
     {
 	if (can_start)
 	{
-	    cout << "Starting bus..." << endl;
 	    next_bus_state = S0;
 	}
 	else
@@ -177,12 +181,10 @@ switch (bus_state)
 	}
 	else if (can_start)
 	{
-	    cout << "Next bus" << endl;
 	    next_bus_state = S0;
 	}
 	else
 	{
-	    cout << "Idle bus" << endl;
 	    next_bus_state = Idle;
 	}
     }

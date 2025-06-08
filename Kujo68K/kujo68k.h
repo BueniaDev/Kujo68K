@@ -48,10 +48,55 @@ namespace kujo68k
 	    void init();
 	    void reset();
 	    void tickCLK(bool clk);
+
+	    bool isInstEnd()
+	    {
+		return (inst_cycle == 0);
+	    }
+
 	    void debugOutput();
+
+	    uint32_t getDataReg(int reg)
+	    {
+		reg &= 0x7;
+		return reg_da.at(reg);
+	    }
+
+	    uint32_t getAddrReg(int reg)
+	    {
+		reg &= 0x7;
+
+		if (reg == 7)
+		{
+		    // TODO: Implement stack pointer selection
+		    return getSP();
+		}
+		else
+		{
+		    return reg_da.at(8 + reg);
+		}
+	    }
+
+	    uint32_t getIPC()
+	    {
+		if (inst_state >= SFirstInstruction)
+		{
+		    return (reg_pc - 2);
+		}
+		else
+		{
+		    return 0;
+		}
+	    }
+
+	    uint32_t getPC()
+	    {
+		return reg_pc;
+	    }
 
 	    virtual void tickInternal();
 	    virtual bool busEnding();
+	    virtual uint32_t getSP();
 
 	    virtual bool getReset();
 	    virtual void setReset(bool val);
@@ -68,7 +113,8 @@ namespace kujo68k
 		SIllegal = 6,
 		SPrivilege = 7,
 		SLineA = 8,
-		SLineF = 9
+		SLineF = 9,
+		SFirstInstruction
 	    };
 
 	    enum DMAPhase
@@ -241,6 +287,18 @@ namespace kujo68k
 	    void tickInternal();
 	    bool getReset();
 	    void setReset(bool val);
+
+	    uint32_t getSP()
+	    {
+		if (testbit(reg_sr, 13))
+		{
+		    return reg_da.at(16);
+		}
+		else
+		{
+		    return reg_da.at(15);
+		}
+	    }
 
 	    Kujo68000Pins &getPins()
 	    {

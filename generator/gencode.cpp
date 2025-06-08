@@ -1114,7 +1114,7 @@ vector<frametype> genGraph(uint16_t a1, uint16_t a2, uint16_t a3, uint16_t ir)
 
 	graph.push_back(frame);
 
-	for (int i = 0; i < frame.size(); i++)
+	for (size_t i = 0; i < frame.size(); i++)
 	{
 	    if (i < 2)
 	    {
@@ -1196,7 +1196,7 @@ vector<KujoM68KBlock> genBlocks(vector<frametype> graph)
     {
 	if (fwd.size() > 3)
 	{
-	    for (int i = 2; i < fwd.size(); i++)
+	    for (size_t i = 2; i < fwd.size(); i++)
 	    {
 		auto ma = fwd.at(i);
 		edges[getValue(ma)] = true;
@@ -1208,7 +1208,7 @@ vector<KujoM68KBlock> genBlocks(vector<frametype> graph)
 
     for (auto &fwd : graph)
     {
-	for (int i = 0; i < fwd.size(); i++)
+	for (size_t i = 0; i < fwd.size(); i++)
 	{
 	    if (i < 2)
 	    {
@@ -1309,7 +1309,7 @@ vector<KujoM68KBlock> genBlocks(vector<frametype> graph)
 	    }
 
 	    auto last = graph.at(getValue(iter));
-	    for (int i = 0; i < last.size(); i++)
+	    for (size_t i = 0; i < last.size(); i++)
 	    {
 		if (i < 2)
 		{
@@ -3427,22 +3427,26 @@ void propagate(vector<KujoM68KBlock> blocks, kujocode &code, map<int, bool> &see
 	else if (ci.tag == "setBus")
 	{
 	    bus_access = ci.args;
-	    ci.args.push_back(getBool(critical));
+	    // ci.args.push_back(getBool(critical));
 	}
 	else if (ci.tag == "setBusEnd")
 	{
-	    auto sr_update = ci.args.front();
-	    ci.args.pop_front();
-
-	    ci.args.push_back(getInt(cycle));
-
-	    for (auto &arg : bus_access)
+	    if (!bus_access.empty())
 	    {
-		ci.args.push_back(arg);
-	    }
+		auto sr_update = ci.args.front();
+		ci.args.pop_front();
 
-	    ci.args.push_back(sr_update);
-	    cycle += 1;
+		ci.args.push_back(getInt(cycle));
+
+		for (auto &arg : bus_access)
+		{
+		    ci.args.push_back(arg);
+		}
+
+		ci.args.push_back(getBool(critical));
+		ci.args.push_back(sr_update);
+		cycle += 1;
+	    }
 	}
 	else if (ci.tag == "dropCritical")
 	{
@@ -3725,7 +3729,7 @@ string makeExpression(deque<string> args, int &num_args)
 	string arg0 = makeExpression(ci, args0);
 
 	stringstream ss;
-	ss << arg0 << " - ((" << args.back() << " < 15) ? 1 : 2)";
+	ss << arg0 << " + ((" << args.back() << " < 15) ? 1 : 2)";
 
 	num_args = (args0 + 1);
 	return ss.str();
@@ -4104,10 +4108,16 @@ vector<string> generateCode(kujocode code, bool &is_step)
 	    }
 	    else if (ci.tag == "setBus")
 	    {
+		continue;
+	    }
+	    else if (ci.tag == "setBusEnd")
+	    {
+		auto cycle = toInt(ci.args.at(0));
+
 		stringstream ss0;
-		ss0 << "\t    setFC(" << ci.args.at(0) << ", " << ci.args.at(1);
+		ss0 << "\t    setFC(" << ci.args.at(1) << ", " << ci.args.at(2);
 
-		if (toInt(ci.args.at(3)) == 0)
+		if (toInt(ci.args.at(4)) == 0)
 		{
 		    ss0 << ", true";
 		}
@@ -4116,7 +4126,7 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		    ss0 << ", false";
 		}
 
-		if (isTrue(ci.args.at(6)))
+		if (isTrue(ci.args.at(7)))
 		{
 		    ss0 << ", true";
 		}
@@ -4125,7 +4135,7 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		    ss0 << ", false";
 		}
 
-		if (isTrue(ci.args.at(8)))
+		if (isTrue(ci.args.at(9)))
 		{
 		    ss0 << ", true";
 		}
@@ -4137,18 +4147,18 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		ss0 << ");";
 		source.push_back(ss0.str());
 
-		bool is_irq_vector_lookup = (toInt(ci.args.at(3)) == 0) && (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)));
+		bool is_irq_vector_lookup = (toInt(ci.args.at(4)) == 0) && (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)));
 
 		if (is_irq_vector_lookup)
 		{
 		    source.push_back("\t    startIRQVectorLookup();");
 		}
 
-		if (toInt(ci.args.at(3)) != 0)
+		if (toInt(ci.args.at(4)) != 0)
 		{
-		    if (isTrue(ci.args.at(2)))
+		    if (isTrue(ci.args.at(3)))
 		    {
-			if (isTrue(ci.args.at(7)))
+			if (isTrue(ci.args.at(8)))
 			{
 			    source.push_back("\t    writeRMC();");
 			}
@@ -4164,13 +4174,13 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		}
 		else
 		{
-		    if (isTrue(ci.args.at(0)) && isTrue(ci.args.at(1)))
+		    if (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)))
 		    {
 			source.push_back("\t    readWordCPU();");
 		    }
-		    else if (isTrue(ci.args.at(2)))
+		    else if (isTrue(ci.args.at(3)))
 		    {
-			if (isTrue(ci.args.at(7)))
+			if (isTrue(ci.args.at(8)))
 			{
 			    source.push_back("\t    readRMC();");
 			}
@@ -4186,10 +4196,7 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		}
 
 		source.push_back("\t    startBus();");
-	    }
-	    else if (ci.tag == "setBusEnd")
-	    {
-		auto cycle = toInt(ci.args.at(0));
+
 
 		stringstream ss1;
 		ss1 << "\t    inst_cycle = " << dec << int(cycle) << ";";
@@ -4209,14 +4216,12 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		source.push_back("");
 		source.push_back("\t    endBus();");
 
-		bool is_irq_vector_lookup = (toInt(ci.args.at(4)) == 0) && (isTrue(ci.args.at(1)) && isTrue(ci.args.at(2)));
-
 		if (is_irq_vector_lookup)
 		{
 		    source.push_back("\t    endIRQVectorLookup();");
 		}
 
-		if (isTrue(ci.args.at(9)))
+		if (isTrue(ci.args.at(10)))
 		{
 		    source.push_back("\t    reg_sr = reg_new_sr;");
 		    source.push_back("\t    updateSupervisor();");

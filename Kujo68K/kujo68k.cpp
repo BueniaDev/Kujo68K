@@ -95,6 +95,7 @@ namespace kujo68k
 	cout << "USP: " << hex << int (reg_da.at(15)) << endl;
 	cout << "SP: " << hex << int (reg_da.at(16)) << endl;
 	cout << "PC: " << hex << int(reg_pc) << endl;
+	cout << "SR: " << hex << int(reg_sr) << endl;
 	cout << "IRD: " << hex << int(reg_ird) << endl;
 	cout << "IR: " << hex << int(reg_ir) << endl;
 	cout << "IRC: " << hex << int(reg_irc) << endl;
@@ -113,6 +114,11 @@ namespace kujo68k
     bool Kujo68KCore::busEnding()
     {
 	return true;
+    }
+
+    uint32_t Kujo68KCore::getSP()
+    {
+	return 0;
     }
 
     bool Kujo68KCore::getReset()

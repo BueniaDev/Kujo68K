@@ -189,9 +189,10 @@ void readRMC()
 
 void readByte()
 {
-    // TODO: Implement this function
-    cout << "readByte" << endl;
-    throw runtime_error("Kujo68K error");
+    is_bus_byte = true;
+    is_bus_write = false;
+    is_bus_rmc = false;
+    is_cpu_access = false;
 }
 
 void readWord()
@@ -218,16 +219,18 @@ void writeRMC()
 
 void writeByte()
 {
-    // TODO: Implement this function
-    cout << "writeByte" << endl;
-    throw runtime_error("Kujo68K error");
+    is_bus_byte = true;
+    is_bus_write = true;
+    is_bus_rmc = false;
+    is_cpu_access = false;
 }
 
 void writeWord()
 {
-    // TODO: Implement this function
-    cout << "writeWord" << endl;
-    throw runtime_error("Kujo68K error");
+    is_bus_byte = false;
+    is_bus_write = true;
+    is_bus_rmc = false;
+    is_cpu_access = false;
 }
 
 void startIRQVectorLookup()
@@ -262,8 +265,7 @@ void endBus()
 
 bool isBusEnd()
 {
-    cout << "Current bus state: " << dec << int(bus_state) << endl;
-    return (bus_state == S6);
+    return ((bus_state == S6) && busEnding());
 }
 
 void updateIPL()
@@ -474,16 +476,62 @@ void aluAdd(uint16_t src1, uint16_t src2)
     reg_aluo = res;
 }
 
-void aluAddByte(uint8_t, uint8_t)
+void aluAddByte(uint8_t src1, uint8_t src2)
 {
-    cout << "aluAddByte" << endl;
-    throw runtime_error("Kujo68K error");
+    uint16_t res = (src2 + src1);
+    uint16_t overflow_res = ((src2 & src1 & ~res) | (~src2 & ~src1 & res));
+    reg_isr = 0;
+
+    if ((res & 0xFF) == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 7))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(res, 8))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(overflow_res, 7))
+    {
+	reg_isr |= SrOverflow;
+    }
+
+    reg_aluo = res;
 }
 
-void aluAddc(uint16_t, uint16_t)
+void aluAddc(uint16_t src1, uint16_t src2)
 {
-    cout << "aluAddc" << endl;
-    throw runtime_error("Kujo68K error");
+    uint32_t res = (src2 + src1 + ((reg_isr & SrCarry) ? 1 : 0));
+    uint32_t overflow_res = ((src2 & src1 & ~res) | (~src2 & ~src1 & res));
+    reg_isr = 0;
+
+    if ((res & 0xFFFF) == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(res, 16))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(overflow_res, 15))
+    {
+	reg_isr |= SrOverflow;
+    }
+
+    reg_aluo = res;
 }
 
 void aluAddx(uint16_t, uint16_t)
@@ -527,16 +575,62 @@ void aluSub(uint16_t src1, uint16_t src2)
     reg_aluo = res;
 }
 
-void aluSubByte(uint8_t, uint8_t)
+void aluSubByte(uint8_t src1, uint8_t src2)
 {
-    cout << "aluSubByte" << endl;
-    throw runtime_error("Kujo68K error");
+    uint16_t res = (src2 - src1);
+    uint16_t overflow_res = ((src2 & ~src1 & ~res) | (~src2 & src1 & res));
+    reg_isr = 0;
+
+    if ((res & 0xFF) == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 7))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(res, 8))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(overflow_res, 7))
+    {
+	reg_isr |= SrOverflow;
+    }
+
+    reg_aluo = res;
 }
 
-void aluSubc(uint16_t, uint16_t)
+void aluSubc(uint16_t src1, uint16_t src2)
 {
-    cout << "aluSubc" << endl;
-    throw runtime_error("Kujo68K error");
+    uint32_t res = (src2 - src1 - ((reg_isr & SrCarry) ? 1 : 0));
+    uint32_t overflow_res = ((src2 & ~src1 & ~res) | (~src2 & src1 & res));
+    reg_isr = 0;
+
+    if ((res & 0xFFFF) == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(res, 16))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(overflow_res, 15))
+    {
+	reg_isr |= SrOverflow;
+    }
+
+    reg_aluo = res;
 }
 
 void aluSubx(uint16_t, uint16_t)
@@ -563,10 +657,22 @@ void aluSbcdByte(uint8_t, uint8_t)
     throw runtime_error("Kujo68K error");
 }
 
-void aluExt(uint16_t)
+void aluExt(uint16_t src)
 {
-    cout << "aluExt" << endl;
-    throw runtime_error("Kujo68K error");
+    uint16_t res = int8_t(src);
+    reg_isr = 0;
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    reg_aluo = res;
 }
 
 void aluNot(uint16_t src)
@@ -702,10 +808,25 @@ void aluAsrLong(uint16_t src)
     reg_alue = (res >> 16);
 }
 
-void aluLsl(uint16_t)
+void aluLsl(uint16_t src)
 {
-    cout << "aluLsl" << endl;
-    throw runtime_error("Kujo68K error");
+    uint16_t res = (src << 1);
+    reg_isr = 0;
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(src, 15))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
 }
 
 void aluLslByte(uint8_t)
@@ -714,10 +835,28 @@ void aluLslByte(uint8_t)
     throw runtime_error("Kujo68K error");
 }
 
-void aluLslLong(uint16_t)
+void aluLslLong(uint16_t src)
 {
-    cout << "aluLslLong" << endl;
-    throw runtime_error("Kujo68K error");
+    uint32_t res = ((reg_alue << 17) | (src << 1));
+    reg_isr = 0;
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 31))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (testbit(reg_alue, 15))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    reg_aluo = res;
+    reg_alue = (res >> 16);
 }
 
 void aluLsr(uint16_t)
@@ -885,6 +1024,6 @@ void updateXNZVC()
 
 void updateXNZVCU()
 {
-    cout << "updateXNZVCU" << endl;
-    throw runtime_error("Kujo68K error");
+    auto mask = (SrExtend | SrSign | SrOverflow | SrCarry);
+    reg_sr = ((reg_sr & ~mask & (reg_isr | ~SrZero)) | (reg_isr & mask));
 }
