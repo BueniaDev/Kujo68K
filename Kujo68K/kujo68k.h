@@ -16,7 +16,8 @@ namespace kujo68k
 {
     struct Kujo68000Pins
     {
-	bool pin_nres = true;
+	bool pin_res = true;
+	bool pin_halt = true;
 	uint32_t addr = 0;
 	uint16_t data = 0;
 	bool pin_rnw = true;
@@ -37,6 +38,8 @@ namespace kujo68k
 	bool pin_bgn = true;
 	bool pin_bgackn = true;
 	bool pin_berrn = true;
+	bool pin_res_out = true;
+	bool pin_halt_out = true;
     };
 
     class Kujo68KCore
@@ -174,7 +177,6 @@ namespace kujo68k
 	    }
 
 	    void initDecodeTable();
-	    void clearDecodeTable();
 
 	    void resetInternal();
 
@@ -231,7 +233,14 @@ namespace kujo68k
 	    uint32_t next_state = 0;
 	    uint32_t int_next_state = 0;
 
+	    uint8_t reg_ipl = 0;
+	    uint8_t int_ipl = 0;
+	    uint8_t reg_inl = 0;
+
 	    uint8_t reg_int_vec = 0;
+
+	    bool is_rberr = false;
+	    bool is_bei = false;
 
 	    uint16_t reg_ssw = 0;
 	    uint16_t base_ssw = 0;
@@ -262,14 +271,19 @@ namespace kujo68k
 	    bool is_xvma = false;
 	    bool is_stop = false;
 
+	    bool prev_nmi = false;
+	    bool is_nmi_occured = false;
+	    bool is_iac = false;
+	    bool is_intpend = false;
+
 	    bool addr_oe = false;
 	    bool data_oe = false;
 
 	    bool ext_res = false;
 
-	    int e_counter = 0;
+	    uint8_t e_counter = 0;
 
-	    vector<uint16_t> decode_table;
+	    array<uint16_t, 0x10000> decode_table;
 
 	    void unrecognizedState()
 	    {

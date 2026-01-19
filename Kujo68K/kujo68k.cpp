@@ -15,7 +15,7 @@ namespace kujo68k
 
     void Kujo68KCore::initDecodeTable()
     {
-	decode_table.resize(0x10000, SIllegal);
+	decode_table.fill(SIllegal);
 
 	for (int i = 0; (ir_decode_table.at(i).mask != 0); i++)
 	{
@@ -42,11 +42,6 @@ namespace kujo68k
 	}
     }
 
-    void Kujo68KCore::clearDecodeTable()
-    {
-	decode_table.clear();
-    }
-
     void Kujo68KCore::init()
     {
 	reg_da.fill(0);
@@ -64,8 +59,10 @@ namespace kujo68k
 
     void Kujo68KCore::resetInternal()
     {
+	reg_inl = 7;
 	inst_state = SReset;
 	inst_cycle = 0;
+	next_state = 0;
 	updateSupervisor();
     }
 
@@ -138,17 +135,16 @@ namespace kujo68k
 
     Kujo68000::~Kujo68000()
     {
-	clearDecodeTable();
     }
 
     bool Kujo68000::getReset()
     {
-	return current_pins.pin_nres;
+	return current_pins.pin_res;
     }
 
     void Kujo68000::setReset(bool val)
     {
-	current_pins.pin_nres = val;
+	current_pins.pin_res = val;
     }
 
     void Kujo68000::tickInternal()

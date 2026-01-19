@@ -716,7 +716,7 @@ IrDecoded decodeIR(uint16_t ir)
 		    case 0b001: decoded.alu_row = 4; break;
 		    case 0b010: decoded.alu_row = 5; break;
 		    case 0b011: decoded.alu_row = 2; break;
-		    case 0b100: decoded.alu_row = testbit(ir, 7) ? 14 : 13;
+		    case 0b100: decoded.alu_row = testbit(ir, 7) ? 14 : 13; break;
 		    case 0b101: decoded.alu_row = 13; break;
 		    case 0b110: decoded.alu_row = 6; break;
 		    default: decoded.alu_row = 0; break;
@@ -1886,7 +1886,6 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
     {
 	alu_info |= aluinfo::arx;
     }
-
 
     int alu_op_offs = ((ir_dec.alu_row * 8) + nano_dec.alu_column);
     int alu_op = alu_ops.at(alu_op_offs);
@@ -4778,7 +4777,8 @@ void generateInstHandlers(ofstream &file)
     }
 
     file << endl;
-    file << "vector<Kujo68KHandler> handlers = {\n";
+    size_t arr_size = (states.size() + handlers.size());
+    file << "array<Kujo68KHandler, " << dec << arr_size << "> handlers = {{\n";
 
     for (size_t i = 0; i < states.size(); i++)
     {
@@ -4819,7 +4819,7 @@ void generateInstHandlers(ofstream &file)
 	}
     }
 
-    file << "};";
+    file << "}};";
 }
 
 bool fetchIRDecode()
@@ -4881,7 +4881,7 @@ bool runHandlers()
     generateInstHandlers(file);
 
     /*
-    auto code = {genBaseCode(0x0030, 0xFFF8, 0x3E2, -1, false)};
+    auto code = {genBaseCode(0x0880, 0xFFF8, 0x3EB, -1, false)};
 
     cout << "Code: " << endl;
 
@@ -4923,6 +4923,14 @@ bool runHandlers()
     // stringstream ss;
     // generateCodeFromInstruction(ss, 0x303C, 0xF1FF);
     // cout << ss.str();
+
+    /*
+    bool is_step = false;
+
+    stringstream ss;
+    generateCodeFromInstruction(ss, 0x0880, 0xFFF8, is_step);
+    cout << ss.str();
+    */
 
     /*
     cout << "Test 1:" << endl;

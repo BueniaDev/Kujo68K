@@ -22729,12 +22729,12 @@ void m68kBclrImm8DsProgram()
 	    reg_dcr = reg_dt;
 	    reg_at = reg_dt;
 	    reg_au = reg_da[ry_index];
-	    aluXor(reg_dt, reg_da[ry_index]);
+	    aluOr(reg_dt, reg_da[ry_index]);
 	    // 06e bclr2
 	    reg_t = testbit(reg_dcr, 4) ? 1 : 0;
 	    reg_alub = reg_da[ry_index];
 	    reg_au = reg_pc + 2;
-	    aluXor(reg_da[ry_index], (1 << (reg_dcr & 0xF)));
+	    aluOr(reg_da[ry_index], (1 << (reg_dcr & 0xF)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -22794,7 +22794,7 @@ void m68kBclrImm8DsProgram()
 	bclr3:
 	    // 08c bclr3
 	    reg_alub = high16(reg_da[ry_index]);
-	    aluXor(high16(reg_da[ry_index]), (1 << (reg_dcr & 0xF)));
+	    aluOr(high16(reg_da[ry_index]), (1 << (reg_dcr & 0xF)));
 	    inst_cycle = 7;
 	}
 	break;
@@ -22902,7 +22902,7 @@ void m68kBclrImm8AisProgram()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -22992,7 +22992,7 @@ void m68kBclrImm8AipsProgram()
 	    reg_dcr = reg_dt;
 	    reg_at = reg_da[ry_index];
 	    reg_au = reg_da[ry_index] + ((ry_index < 15) ? 1 : 2);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    // 21d pinw2
 	    reg_da[ry_index] = reg_au;
 	    reg_au = reg_pc + 2;
@@ -23018,7 +23018,7 @@ void m68kBclrImm8AipsProgram()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23107,7 +23107,7 @@ void m68kBclrImm8PaisProgram()
 	    reg_pc = reg_au;
 	    reg_dcr = reg_dt;
 	    reg_au = reg_da[ry_index] - ((ry_index < 15) ? 1 : 2);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    inst_cycle = 2;
 	}
 	break;
@@ -23145,7 +23145,7 @@ void m68kBclrImm8PaisProgram()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23276,7 +23276,7 @@ void m68kBclrImm8DasProgram()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23455,7 +23455,7 @@ void m68kBclrImm8DaisProgram()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23544,7 +23544,7 @@ void m68kBclrImm8Adr16Program()
 	    reg_dcr = reg_dt;
 	    reg_at = ext32(reg_dbin);
 	    reg_au = ext32(reg_dbin);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -23586,7 +23586,7 @@ void m68kBclrImm8Adr16Program()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23694,7 +23694,7 @@ void m68kBclrImm8Adr32Program()
 	    reg_dcr = reg_dt;
 	    setReg16Low(reg_at, reg_dbin);
 	    reg_au = merge32(high16(reg_at), reg_dbin);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -23736,7 +23736,7 @@ void m68kBclrImm8Adr32Program()
 	    updateIPL();
 	    reg_alub = reg_dbin;
 	    reg_ftu = reg_sr;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    // 067 bclm2
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
@@ -23828,12 +23828,12 @@ void m68kBsetImm8DsProgram()
 	    reg_dcr = reg_dt;
 	    reg_at = reg_dt;
 	    reg_au = reg_da[ry_index];
-	    aluXor(reg_dt, reg_da[ry_index]);
+	    aluOr(reg_dt, reg_da[ry_index]);
 	    // 06a bcsr2
 	    reg_t = testbit(reg_dcr, 4) ? 1 : 0;
 	    reg_alub = reg_da[ry_index];
 	    reg_au = reg_pc + 2;
-	    aluXor(reg_da[ry_index], (1 << (reg_dcr & 0xF)));
+	    aluOr(reg_da[ry_index], (1 << (reg_dcr & 0xF)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -23881,7 +23881,7 @@ void m68kBsetImm8DsProgram()
 	bcsr3:
 	    // 084 bcsr3
 	    reg_alub = high16(reg_da[ry_index]);
-	    aluXor(high16(reg_da[ry_index]), (1 << (reg_dcr & 0xF)));
+	    aluOr(high16(reg_da[ry_index]), (1 << (reg_dcr & 0xF)));
 	    inst_cycle = 5;
 	}
 	break;
@@ -23978,7 +23978,7 @@ void m68kBsetImm8AisProgram()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24064,7 +24064,7 @@ void m68kBsetImm8AipsProgram()
 	    reg_dcr = reg_dt;
 	    reg_at = reg_da[ry_index];
 	    reg_au = reg_da[ry_index] + ((ry_index < 15) ? 1 : 2);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    // 21d pinw2
 	    reg_da[ry_index] = reg_au;
 	    reg_au = reg_pc + 2;
@@ -24091,7 +24091,7 @@ void m68kBsetImm8AipsProgram()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24176,7 +24176,7 @@ void m68kBsetImm8PaisProgram()
 	    reg_pc = reg_au;
 	    reg_dcr = reg_dt;
 	    reg_au = reg_da[ry_index] - ((ry_index < 15) ? 1 : 2);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    inst_cycle = 2;
 	}
 	break;
@@ -24215,7 +24215,7 @@ void m68kBsetImm8PaisProgram()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24343,7 +24343,7 @@ void m68kBsetImm8DasProgram()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24519,7 +24519,7 @@ void m68kBsetImm8DaisProgram()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24604,7 +24604,7 @@ void m68kBsetImm8Adr16Program()
 	    reg_dcr = reg_dt;
 	    reg_at = ext32(reg_dbin);
 	    reg_au = ext32(reg_dbin);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24647,7 +24647,7 @@ void m68kBsetImm8Adr16Program()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24751,7 +24751,7 @@ void m68kBsetImm8Adr32Program()
 	    reg_dcr = reg_dt;
 	    setReg16Low(reg_at, reg_dbin);
 	    reg_au = merge32(high16(reg_at), reg_dbin);
-	    aluXorByte(reg_dt, reg_dbin);
+	    aluOrByte(reg_dt, reg_dbin);
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -24794,7 +24794,7 @@ void m68kBsetImm8Adr32Program()
 	    reg_alub = reg_dbin;
 	    reg_pc = reg_au;
 	    reg_au = reg_au + 2;
-	    aluXorByte(reg_dbin, (1 << (reg_dcr & 0x7)));
+	    aluOrByte(reg_dbin, (1 << (reg_dcr & 0x7)));
 	    setFC(false, true, true, false, false);
 	    readWord();
 	    startBus();
@@ -202742,7 +202742,7 @@ void m68kRolAdr32Program()
 }
 
 
-vector<Kujo68KHandler> handlers = {
+array<Kujo68KHandler, 1535> handlers = {{
     {getFunction(ResetDp), false},
     {getFunction(DoubleFaultDp), false},
     {getFunction(DoubleFaultDp), false},
@@ -204278,4 +204278,4 @@ vector<Kujo68KHandler> handlers = {
     {getFunction(RolDais), true},
     {getFunction(RolAdr16), false},
     {getFunction(RolAdr32), false}
-};
+}};
