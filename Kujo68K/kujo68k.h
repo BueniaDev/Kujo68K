@@ -180,7 +180,7 @@ namespace kujo68k
 
 	    void resetInternal();
 
-	    using progfunc = function<void()>;
+	    using progfunc = void (Kujo68KCore::*)();
 
 	    struct Kujo68KHandler
 	    {

@@ -63,13 +63,13 @@ else
 
     if (clk_rise && (bus_state == S2) && !is_bus_write)
     {
-	current_pins.pin_udsn = !(!is_bus_byte || !testbit(reg_aob, 0));
-	current_pins.pin_ldsn = !(!is_bus_byte || testbit(reg_aob, 0));
+	current_pins.pin_udsn = (is_bus_byte && testbit(reg_aob, 0));
+	current_pins.pin_ldsn = (is_bus_byte && !testbit(reg_aob, 0));
     }
     else if (clk_rise && (bus_state == S4) && is_bus_write)
     {
-	current_pins.pin_udsn = !(!is_bus_byte || !testbit(reg_aob, 0));
-	current_pins.pin_ldsn = !(!is_bus_byte || testbit(reg_aob, 0));
+	current_pins.pin_udsn = (is_bus_byte && testbit(reg_aob, 0));
+	current_pins.pin_ldsn = (is_bus_byte && !testbit(reg_aob, 0));
     }
     else if (clk_fall && (bus_state == S6))
     {
@@ -90,7 +90,7 @@ else
 
 if (clk_rise && !ext_res)
 {
-    handlers[inst_state].func();
+    (this->*(handlers[inst_state].func))();
 }
 
 if (ext_res)

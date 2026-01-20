@@ -124726,7 +124726,7 @@ void m68kSltDsProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -124819,7 +124819,7 @@ void m68kDbltDsRel16Program()
 	case 0:
 	{
 	    // 06c dbcc1
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_au = ext32(reg_dbin) + reg_pc;
 	    inst_cycle = 1;
 	}
@@ -125032,7 +125032,7 @@ void m68kSltAisProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125158,7 +125158,7 @@ void m68kSltAipsProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125290,7 +125290,7 @@ void m68kSltPaisProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125431,7 +125431,7 @@ void m68kSltDasProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125615,7 +125615,7 @@ void m68kSltDaisProgram()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125756,7 +125756,7 @@ void m68kSltAdr16Program()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -125916,7 +125916,7 @@ void m68kSltAdr32Program()
 	    reg_aob = reg_au;
 	    reg_ir = reg_irc;
 	    updateIPL();
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_pc = reg_au;
 	    aluAndByte(0x0000, 0x0000);
 	    if (reg_t)
@@ -131506,7 +131506,7 @@ void m68kBltRel16Program()
 	case 0:
 	{
 	    // 068 bbcw1
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_au = ext32(reg_dbin) + reg_pc;
 	    inst_cycle = 1;
 	}
@@ -131629,7 +131629,7 @@ void m68kBltRel8Program()
 	case 0:
 	{
 	    // 308 bbci1
-	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0;
+	    reg_t = (((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0;
 	    reg_au = reg_pc + ext32(reg_ftu);
 	    inst_cycle = 1;
 	}

@@ -2381,7 +2381,7 @@ deque<KujoCodeLine> genBaseCode(uint16_t ir_val, uint16_t ir_mask, uint16_t madd
 	    break;
 	    case 0xD:
 	    {
-		code.push_back({"setCond", {"(((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & SrOverflow) == 0)) ? 1 : 0"}});
+		code.push_back({"setCond", {"(((reg_sr & (SrSign | SrOverflow)) == SrSign) || ((reg_sr & (SrSign | SrOverflow)) == SrOverflow)) ? 1 : 0"}});
 	    }
 	    break;
 	    case 0xE:

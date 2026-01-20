@@ -72,7 +72,10 @@ namespace kujo68k
 	clk_fall = (prev_clk && !clk);
 	ext_res = !getReset();
 
-	tickInternal();
+	if (prev_clk != clk)
+	{
+	    tickInternal();
+	}
 
 	prev_clk = clk;
     }
