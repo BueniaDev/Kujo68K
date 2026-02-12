@@ -19,7 +19,7 @@ And more to come!
 
 ## Near-term
 
-Finish up current implementation (interrupt-related functionality and a bunch of ALU-related functions still missing)
+Finish up current implementation (a few ALU-related functions still missing)
 
 ## Medium-term
 
