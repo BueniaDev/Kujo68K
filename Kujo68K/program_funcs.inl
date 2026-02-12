@@ -218,9 +218,10 @@ void readWord()
 
 void readWordCPU()
 {
-    // TODO: Implement this function
-    cout << "readWordCPU" << endl;
-    throw runtime_error("Kujo68K error");
+    is_bus_byte = false;
+    is_bus_write = false;
+    is_bus_rmc = false;
+    is_cpu_access = true;
 }
 
 void writeRMC()
@@ -372,10 +373,22 @@ void aluAnd(uint16_t src1, uint16_t src2)
     reg_aluo = res;
 }
 
-void aluAndx(uint16_t, uint16_t)
+void aluAndx(uint16_t src1, uint16_t src2)
 {
-    cout << "aluAndx" << endl;
-    throw runtime_error("Kujo68K error");
+    uint16_t res = (src2 & src1);
+    reg_isr = (reg_sr & SrExtend) ? (SrExtend | SrCarry) : 0;
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    reg_aluo = res;
 }
 
 void aluAndByte(uint16_t src1, uint16_t src2)
@@ -396,10 +409,22 @@ void aluAndByte(uint16_t src1, uint16_t src2)
     reg_aluo = res;
 }
 
-void aluAndBytex(uint8_t, uint8_t)
+void aluAndBytex(uint8_t src1, uint8_t src2)
 {
-    cout << "aluAndBytex" << endl;
-    throw runtime_error("Kujo68K error");
+    uint8_t res = (src2 & src1);
+    reg_isr = (reg_sr & SrExtend) ? (SrExtend | SrCarry) : 0;
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    if (testbit(res, 7))
+    {
+	reg_isr |= SrSign;
+    }
+
+    reg_aluo = res;
 }
 
 void aluOr(uint16_t src1, uint16_t src2)
@@ -1209,22 +1234,77 @@ void aluRorLong(uint16_t src)
     reg_alue = (res >> 16);
 }
 
-void aluRoxl(uint16_t)
+void aluRoxl(uint16_t src)
 {
-    cout << "aluRoxl" << endl;
-    throw runtime_error("Kujo68K error");
+    bool bit0 = (reg_sr & SrExtend) ? 1 : 0;
+    uint16_t res = ((src << 1) | bit0);
+    reg_isr = 0;
+
+    if (testbit(src, 15))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(res, 15))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    reg_aluo = res;
 }
 
-void aluRoxlByte(uint8_t)
+void aluRoxlByte(uint8_t src)
 {
-    cout << "aluRoxlByte" << endl;
-    throw runtime_error("Kujo68K error");
+    bool bit0 = (reg_sr & SrExtend) ? 1 : 0;
+    uint8_t res = ((src << 1) | bit0);
+    reg_isr = 0;
+
+    if (testbit(src, 7))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(res, 7))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    reg_aluo = res;
 }
 
-void aluRoxlLong(uint16_t)
+void aluRoxlLong(uint16_t src)
 {
-    cout << "aluRoxlLong" << endl;
-    throw runtime_error("Kujo68K error");
+    bool bit0 = (reg_sr & SrExtend) ? 1 : 0;
+    uint32_t res = ((reg_alue << 17) | (src << 1) | bit0);
+    reg_isr = 0;
+
+    if (testbit(reg_alue, 15))
+    {
+	reg_isr |= (SrExtend | SrCarry);
+    }
+
+    if (testbit(res, 31))
+    {
+	reg_isr |= SrSign;
+    }
+
+    if (res == 0)
+    {
+	reg_isr |= SrZero;
+    }
+
+    reg_aluo = res;
+    reg_alue = (res >> 16);
 }
 
 void aluRoxr(uint16_t)

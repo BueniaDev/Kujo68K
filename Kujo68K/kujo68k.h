@@ -241,6 +241,7 @@ namespace kujo68k
 
 	    bool is_rberr = false;
 	    bool is_bei = false;
+	    bool bei_delay = false;
 
 	    uint16_t reg_ssw = 0;
 	    uint16_t base_ssw = 0;
@@ -276,8 +277,8 @@ namespace kujo68k
 	    bool is_iac = false;
 	    bool is_intpend = false;
 
-	    bool addr_oe = false;
-	    bool data_oe = false;
+	    bool is_spurious = false;
+	    bool is_autovec = false;
 
 	    bool ext_res = false;
 

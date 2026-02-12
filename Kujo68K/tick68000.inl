@@ -5,7 +5,64 @@ if (ext_res)
 }
 else if (clk_fall)
 {
+    int_ipl = reg_ipl;
+    reg_ipl = ((!current_pins.pin_ipl2n << 2) | (!current_pins.pin_ipl1n << 1) | !current_pins.pin_ipl0n);
     is_dtack = current_pins.pin_dtack;
+    is_rberr = current_pins.pin_berrn;
+}
+else if (clk_rise)
+{
+    is_vpai = current_pins.pin_vpan;
+    bei_delay = is_bei;
+    is_bei = is_rberr;
+}
+
+if (clk_fall)
+{
+    bool is_ipl_stable = (int_ipl == reg_ipl);
+    bool is_nmi = (int_ipl == 7);
+    bool ipl_comp = (reg_ipl > ((reg_sr >> 8) & 0x7));
+
+    is_nmi_occured = (!prev_nmi && is_nmi);
+
+    bool is_iac = (current_pins.pin_fc2 && current_pins.pin_fc1 && current_pins.pin_fc0);
+
+    if (is_ipl_stable && (is_nmi_occured || ipl_comp))
+    {
+	is_intpend = true;
+	updateInterrupts();
+    }
+    else if (((reg_inl == 0x7) && is_iac) || (is_ipl_stable && !is_nmi && !ipl_comp))
+    {
+	is_intpend = false;
+	updateInterrupts();
+    }
+
+    prev_nmi = is_nmi;
+}
+
+if (clk_rise && (bus_state == S4) && is_cpu_access)
+{
+    bool is_iac = (current_pins.pin_fc2 && current_pins.pin_fc1 && current_pins.pin_fc0);
+    is_spurious = (!bei_delay && is_iac);
+    is_autovec = (!is_vpai && is_iac);
+}
+
+if (clk_rise && (bus_state == S6) && is_cpu_access)
+{
+    if (is_autovec)
+    {
+	int level = ((reg_aob >> 1) & 0x7);
+	reg_edb = (0x18 + level);
+    }
+    else if (is_spurious)
+    {
+	reg_edb = 0x18;
+    }
+    else
+    {
+	reg_edb = current_pins.data;
+    }
 }
 
 if (ext_res)
@@ -77,7 +134,7 @@ else
 	current_pins.pin_ldsn = true;
     }
 
-    if (clk_rise && (bus_state == S6) && !is_bus_write)
+    if (clk_rise && (bus_state == S6) && !is_bus_write && !is_cpu_access)
     {
 	reg_edb = current_pins.data;
 

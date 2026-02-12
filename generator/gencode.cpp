@@ -4238,7 +4238,7 @@ vector<string> generateCode(kujocode code, bool &is_step)
 		if ((arg == "trap-tvn") || (arg == "int-tvn"))
 		{
 		    stringstream ss;
-		    ss << "\t    trapExcept(" << makeExpression(ci.args.at(0)) << ");";
+		    ss << "\t    trapExcept((" << makeExpression(ci.args.at(0)) << ") >> 2);";
 		    source.push_back(ss.str());
 		}
 		else

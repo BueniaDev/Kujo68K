@@ -888,7 +888,7 @@ void m68kInterruptDpProgram()
 	    // 360 trap4
 	    reg_aob = reg_au;
 	    reg_dbout = reg_aluo;
-	    trapExcept(reg_int_vec);
+	    trapExcept((reg_int_vec) >> 2);
 	    reg_da[16] = reg_au;
 	    reg_ftu = reg_int_vec;
 	    reg_au = reg_au + 2;
@@ -99433,7 +99433,7 @@ void m68kTrapImm4Program()
 	    // 360 trap4
 	    reg_aob = reg_au;
 	    reg_dbout = reg_aluo;
-	    trapExcept(0x80 | ((reg_ird & 0xF) << 2));
+	    trapExcept((0x80 | ((reg_ird & 0xF) << 2)) >> 2);
 	    reg_da[16] = reg_au;
 	    reg_ftu = 0x80 | ((reg_ird & 0xF) << 2);
 	    reg_au = reg_au + 2;
