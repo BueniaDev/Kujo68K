@@ -1,3 +1,9 @@
+# Require C++20 (and position independent code)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(KUJO68K_HEADERS
 	kujo68k.h)
 

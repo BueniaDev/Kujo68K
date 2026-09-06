@@ -3935,7 +3935,9 @@ vector<string> generateCode(kujocode code, bool &is_step)
 	    }
 	    else if (ci.tag == "setLines")
 	    {
-		continue;
+		stringstream ss;
+		ss << "\t    setLines(" << ci.args.at(0) << ", " << ci.args.at(1) << ");";
+		source.push_back(ss.str());
 	    }
 	    else if (ci.tag == "step")
 	    {

@@ -131,6 +131,16 @@ namespace kujo68k
 	return;
     }
 
+    void Kujo68KCore::setResetOut(bool)
+    {
+	return;
+    }
+
+    void Kujo68KCore::setHaltOut(bool)
+    {
+	return;
+    }
+
     Kujo68000::Kujo68000()
     {
 	initDecodeTable();
@@ -148,6 +158,16 @@ namespace kujo68k
     void Kujo68000::setReset(bool val)
     {
 	current_pins.pin_res = val;
+    }
+
+    void Kujo68000::setResetOut(bool val)
+    {
+	current_pins.pin_res_out = !val;
+    }
+
+    void Kujo68000::setHaltOut(bool val)
+    {
+	current_pins.pin_halt_out = !val;
     }
 
     void Kujo68000::tickInternal()

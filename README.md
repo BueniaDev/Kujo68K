@@ -19,15 +19,16 @@ And more to come!
 
 ## Near-term
 
-Finish up current implementation (a few ALU-related functions still missing)
+Thoroughly verify interrupt-related functionality and bus arbitration logic (basic tests of both confirmed working)
 
 ## Medium-term
 
-Implement bus arbitration and bus error logic
+Implement bus-error and address-error logic
 
 ## Long-term
 
 M68008 support
+Support for other (M68000-derived) variants (such as TMP68301, and possibly others)
 
 # License
 

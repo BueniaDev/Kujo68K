@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <optional>
 #include <functional>
+#include <bit>
 using namespace std;
 using namespace std::placeholders;
 
@@ -103,6 +104,9 @@ namespace kujo68k
 
 	    virtual bool getReset();
 	    virtual void setReset(bool val);
+
+	    virtual void setResetOut(bool val);
+	    virtual void setHaltOut(bool val);
 
 	protected:
 	    enum : int
@@ -243,14 +247,22 @@ namespace kujo68k
 	    bool is_bei = false;
 	    bool bei_delay = false;
 
+	    bool is_bri = false;
+	    bool is_bgacki = false;
+	    bool is_bus_granted = false;
+
 	    uint16_t reg_ssw = 0;
 	    uint16_t base_ssw = 0;
 
 	    BusState bus_state = Idle;
 	    BusState next_bus_state = Idle;
 
+	    DMAPhase dma_phase = DmaReset;
+
 	    bool is_bus_available = false;
 	    bool is_bus_start = false;
+	    bool is_bus_ending = false;
+	    bool is_bus_active = true;
 
 	    bool is_last_bus_cycle = false;
 	    bool is_next_inst = false;
@@ -302,6 +314,9 @@ namespace kujo68k
 	    void tickInternal();
 	    bool getReset();
 	    void setReset(bool val);
+
+	    void setResetOut(bool val);
+	    void setHaltOut(bool val);
 
 	    uint32_t getSP()
 	    {

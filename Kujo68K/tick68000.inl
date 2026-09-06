@@ -15,6 +15,27 @@ else if (clk_rise)
     is_vpai = current_pins.pin_vpan;
     bei_delay = is_bei;
     is_bei = is_rberr;
+    is_bri = current_pins.pin_brn;
+    is_bgacki = current_pins.pin_bgackn;
+}
+
+if (clk_fall)
+{
+    if (e_counter == 9)
+    {
+	current_pins.pin_e = false;
+    }
+    else if (e_counter == 5)
+    {
+	current_pins.pin_e = true;
+    }
+
+    e_counter += 1;
+
+    if (e_counter == 10)
+    {
+	e_counter = 0;
+    }
 }
 
 if (clk_fall)
@@ -75,7 +96,7 @@ if (ext_res)
     current_pins.pin_fc1 = false;
     current_pins.pin_fc2 = false;
 }
-else
+else if (is_bus_active)
 {
     bool is_bus_ending = ((bus_state == S0) || (bus_state == Idle));
 
@@ -145,9 +166,125 @@ else
     }
 }
 
-if (clk_rise && !ext_res)
+if (clk_rise && !ext_res && is_bus_active)
 {
     (this->*(handlers[inst_state].func))();
+}
+
+bool bg_block = (((bus_state == S0) && current_pins.pin_asn) || (bus_state == RmcRes));
+
+if (ext_res)
+{
+    dma_phase = DmaReset;
+    is_bus_granted = false;
+    current_pins.pin_bgn = true;
+}
+else if (clk_fall)
+{
+    switch (dma_phase)
+    {
+	case DmaReset:
+	{
+	    dma_phase = DmaIdle;
+	    is_bus_granted = false;
+	}
+	break;
+	case DmaIdle:
+	{
+	    if (!bg_block)
+	    {
+		if (!is_bgacki)
+		{
+		    // cout << "Switching to DMA state of BA" << endl;
+		    // throw runtime_error("Kujo68K error");
+		    dma_phase = DmaBa;
+		    is_bus_granted = false;
+		}
+		else if (!is_bri)
+		{
+		    dma_phase = DmaD1;
+		    is_bus_granted = true;
+		    // cout << "Switching to DMA state of D1" << endl;
+		    // throw runtime_error("Kujo68K error");
+		}
+	    }
+	}
+	break;
+	case DmaBa:
+	{
+	    if (!is_bri && !bg_block)
+	    {
+		dma_phase = DmaD3;
+		is_bus_granted = true;
+	    }
+	    else if (is_bgacki || bg_block)
+	    {
+		dma_phase = DmaIdle;
+		is_bus_granted = false;
+	    }
+	}
+	break;
+	case DmaD1:
+	{
+	    dma_phase = DmaBr;
+	    is_bus_granted = true;
+	}
+	break;
+	case DmaD3:
+	{
+	    dma_phase = DmaBra;
+	    is_bus_granted = true;
+	}
+	break;
+	case DmaBr:
+	{
+	    if (is_bri || !is_bgacki)
+	    {
+		dma_phase = DmaBa;
+		is_bus_granted = false;
+	    }
+	}
+	break;
+	case DmaBra:
+	{
+	    if (is_bgacki)
+	    {
+		dma_phase = (is_bri) ? DmaIdle : DmaBr;
+		is_bus_granted = !is_bri;
+	    }
+	    else if (is_bri)
+	    {
+		dma_phase = DmaD2;
+		is_bus_granted = false;
+	    }
+	}
+	break;
+	case DmaD2:
+	{
+	    dma_phase = DmaBa;
+	    is_bus_granted = false;
+	}
+	break;
+	default:
+	{
+	    cout << "Unrecognized DMA state of " << dec << int(dma_phase) << endl;
+	    throw runtime_error("Kujo68K error");
+	}
+	break;
+    }
+}
+else if (clk_rise)
+{
+    current_pins.pin_bgn = !is_bus_granted;
+}
+
+if (ext_res)
+{
+    is_bus_active = true;
+}
+else
+{
+    is_bus_active = (is_bri && is_bgacki && !is_bus_granted);
 }
 
 if (ext_res)
@@ -160,7 +297,7 @@ else if (clk_fall)
     {
 	case Idle:
 	{
-	    bool is_bus_available = true;
+	    is_bus_available = (is_bri && is_bgacki && !is_bus_granted);
 	    bool is_bus_retry = false;
 	    bool is_bus_reset = ext_res;
 	    bool is_next_inst = is_bus_begin;
@@ -193,7 +330,7 @@ else if (clk_fall)
 	break;
 	case S6:
 	{
-	    bool is_bus_available = true;
+	    is_bus_available = (is_bri && is_bgacki && !is_bus_granted);
 	    bool is_bus_retry = false;
 	    bool is_bus_reset = ext_res;
 	    bool is_next_inst = is_bus_begin;
@@ -216,6 +353,7 @@ else if (clk_fall)
 	    }
 	}
 	break;
+	case RmcRes: bus_state = Idle; break;
 	default:
 	{
 	    cout << "Unrecognized bus state of " << dec << int(bus_state) << endl;
