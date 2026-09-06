@@ -2,7 +2,7 @@
 
 Cycle-accurate M68000 emulation library, kinda
 
-A (WIP) cycle-accurate emulation library for the M68000 processor, writen in C++17.
+A (WIP) cycle-accurate emulation library for the M68000 processor, writen in C++20.
 
 ## Features
 
