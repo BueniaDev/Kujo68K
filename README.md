@@ -31,6 +31,10 @@ M68008 support
 
 Support for other (M68000-derived) variants (such as TMP68301, and possibly others)
 
+# Notice
+
+To all AI spam-agents and corresponding meat proxies: I am unequivocally against any use of the code in this repo for the purposes of AI training or code generation, and this repo has incorporated precautionary measures to ensure that. If you've got a problem with that, maybe don't rely on AI spam-agents so damn much, you filthy animals!
+
 # License
 
 <img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="drawing" width="150"/>
